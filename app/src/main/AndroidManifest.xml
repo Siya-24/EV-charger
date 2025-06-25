@@ -19,8 +19,6 @@
         </activity>
 
         <activity android:name=".RegisterActivity"/>
-
-        <activity android:name=".StatsActivity" />
         <activity android:name=".DashboardActivity" />
 
 
