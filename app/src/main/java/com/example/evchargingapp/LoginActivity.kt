@@ -49,9 +49,9 @@ class LoginActivity : AppCompatActivity() {
                         Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
 
                         // // navigation to home page----------------------------------------
-                        // val intent = Intent(this, HomeActivity::class.java)
-                        // startActivity(intent)
-                        // finish() // so user can't go back to login using back button
+                        val intent = Intent(this, HomePageActivity::class.java)
+                        startActivity(intent)
+                        finish() // Optional: close LoginActivity so user can't go back to it
 
                     } else {
                         Toast.makeText(this, "Login Failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()

@@ -73,5 +73,21 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
+    //google map integration:
+    // Google Maps SDK
+    implementation(libs.play.services.maps)
+
+    // Location services
+    implementation(libs.play.services.maps)
+    //noinspection UseTomlInstead
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+
+
+
+    // Material Design + Navigation Drawer
+    implementation(libs.androidx.drawerlayout)
+    implementation(libs.material)
+
+
 
 }
