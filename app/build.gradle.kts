@@ -69,7 +69,7 @@ dependencies {
     implementation(libs.androidx.cardview)//this is for charging_stats
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.database.ktx)
-    // adding the retrofit dependencies to create a path between app and server to request otp and verify the otp
+    // adding the retrofit dependencies to create a path between app and server so that app and server can talk
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 

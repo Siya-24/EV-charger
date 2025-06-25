@@ -11,6 +11,13 @@ import com.google.firebase.database.FirebaseDatabase // added this for the real-
 import com.example.evchargingapp.User
 // importing the user data class for creating a user in real time database....this is being used at line 53
 
+//importing the retrofit class to make connection between app and server ------
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import com.example.evchargingapp.ApiResponse
+//-----------------------------------------------------------------------------
+
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -21,6 +28,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var otpEditText: EditText
     private lateinit var resendOtpText: TextView
     private lateinit var registerButton: Button
+    private lateinit var sendOtpButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +41,7 @@ class RegisterActivity : AppCompatActivity() {
     //        val password = findViewById<EditText>(R.id.passwordEditText)
     //        val registerButton = findViewById<Button>(R.id.registerButton)
 
-    //-------- After designing the vars as private:
+        //-------- After designing the vars as private:
 
         // Bind views to IDs
         usernameEditText = findViewById(R.id.usernameEditText)
@@ -42,7 +50,30 @@ class RegisterActivity : AppCompatActivity() {
         otpEditText = findViewById(R.id.otpEditText)
         resendOtpText = findViewById(R.id.resendOtpText)
         registerButton = findViewById(R.id.registerButton)
-    //-----------------------------------------------------
+        sendOtpButton = findViewById(R.id.sendOtpButton)
+        //-----------------------------------------------------
+
+        // send otp button ------------------------------------------------
+        sendOtpButton = findViewById<Button>(R.id.sendOtpButton)
+        sendOtpButton.setOnClickListener {
+            val email = emailEditText.text.toString()
+
+            RetrofitClient.instance.sendOtp(SendOtpRequest(email))
+                .enqueue(object : Callback<ApiResponse> {
+                    override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                        if (response.isSuccessful) {
+                            Toast.makeText(this@RegisterActivity, "OTP Sent", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(this@RegisterActivity, "Failed to send OTP", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                        Toast.makeText(this@RegisterActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
+        }
+
 
         // Handle "Resend code" click
         resendOtpText.setOnClickListener {
@@ -61,8 +92,14 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Verify OTP before creating user
+            RetrofitClient.instance.verifyOtp(VerifyOtpRequest(emailInput, otpInput))
+                .enqueue(object : Callback<ApiResponse> {
+                    override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                        if (response.isSuccessful && response.body()?.success == true) {
+                            Toast.makeText(this@RegisterActivity, "OTP Verified", Toast.LENGTH_SHORT).show()
 
-
+                            
             auth.createUserWithEmailAndPassword(emailInput, passwordInput)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -112,5 +149,12 @@ class RegisterActivity : AppCompatActivity() {
 
     }
 
+                    override fun onFailure(
+                        call: retrofit2.Call<com.example.evchargingapp.ApiResponse?>,
+                        t: kotlin.Throwable
+                    ) {
+                        TODO("Not yet implemented")
+                    }
 
-}
+
+                })}}}
