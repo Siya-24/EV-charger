@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">EvChargingApp</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- Strings for Charging Stats Page -->
+    <string name="charging_session_stats">Charging Session Stats</string>
+    <string name="charging_duration">Charging Duration</string>
+    <string name="avg_charging_power">Average Charging Power</string>
+    <string name="energy_consumed">Energy Consumed</string>
+    <string name="cost_of_charging">Cost of Charging</string>
+    <string name="battery_percentage_gained">Battery Percentage Gained</string>
+    <string name="charging_speed_range_per_hour">Charging Speed (Range/Hour)</string>
+    <string name="approx_time_to_target_percentage">Approx. Time to Target Percentage</string>
+    <string name="dash">-</string> <!-- For initial empty text where data will be loaded -->
+    <!-- ****************************************************************************************-->
+
+</resources>

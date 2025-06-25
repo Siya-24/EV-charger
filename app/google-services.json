@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "644794460233",
+    "project_id": "evse-170a5",
+    "storage_bucket": "evse-170a5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644794460233:android:44254bdabcebe25142b798",
+        "android_client_info": {
+          "package_name": "com.example.evchargingapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBChsHfdjopfPtb1iMHD-WLImKfOpfIk9k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
