@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EvChargingApp"> <!-- Replace with your actual theme -->
 
-        <activity android:name=".LoginActivity"
+        <activity android:name=".auth.LoginActivity"
             android:exported="true"> <!-- Required if there's an intent-filter -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,13 +19,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".RegisterActivity"/>
+        <activity android:name=".auth.RegisterActivity"/>
         <!-- GOOGLE MAPS API KEY ++++++++++++++++++++++++++-->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="YOUR_GOOGLE_MAPS_API_KEY"/>
 
-        <activity android:name=".HomePageActivity"/>
+        <activity android:name=".home.HomePageActivity"/>
     </application>
 
 </manifest>

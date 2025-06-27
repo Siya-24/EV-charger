@@ -14,7 +14,7 @@
 
     android:background="#F8F9FA"
 
-    tools:context=".StatsActivity">
+    tools:context=".stats.StatsActivity">
 
 
 
