@@ -7,23 +7,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.evchargingapp.network.ApiResponse
-import com.example.evchargingapp.data.MyDatabaseHelper
 import com.example.evchargingapp.R
-import com.example.evchargingapp.network.RetrofitClient
-import com.example.evchargingapp.network.SendOtpRequest
-import com.example.evchargingapp.data.User
-import com.example.evchargingapp.network.VerifyOtpRequest
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class RegisterActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
+    private val viewModel: RegisterViewModel by viewModels()
+
     private lateinit var usernameEditText: EditText
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
@@ -35,13 +26,6 @@ class RegisterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
-
-        auth = FirebaseAuth.getInstance()
-
-    //        val username = findViewById<EditText>(R.id.usernameEditText)
-    //        val email = findViewById<EditText>(R.id.emailEditText)
-    //        val password = findViewById<EditText>(R.id.passwordEditText)
-    //        val registerButton = findViewById<Button>(R.id.registerButton)
 
         //-------- After designing the vars as private:
 
@@ -56,26 +40,10 @@ class RegisterActivity : AppCompatActivity() {
         //-----------------------------------------------------
 
         // send otp button ------------------------------------------------
-        sendOtpButton = findViewById<Button>(R.id.sendOtpButton)
         sendOtpButton.setOnClickListener {
             val email = emailEditText.text.toString()
-
-            RetrofitClient.instance.sendOtp(SendOtpRequest(email))
-                .enqueue(object : Callback<ApiResponse> {
-                    override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                        if (response.isSuccessful) {
-                            Toast.makeText(this@RegisterActivity, "OTP Sent", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(this@RegisterActivity, "Failed to send OTP", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-                        Toast.makeText(this@RegisterActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                    }
-                })
+            viewModel.sendOtp(email)
         }
-
 
         // Handle "Resend code" click
         resendOtpText.setOnClickListener {
@@ -88,76 +56,46 @@ class RegisterActivity : AppCompatActivity() {
             val emailInput = emailEditText.text.toString().trim()
             val passwordInput = passwordEditText.text.toString()
             val otpInput = otpEditText.text.toString()
+
             //++++++++++++++++++++ NOTE: currently leaving the otp field empty ++++++++++++++++++++++++++
             if (usernameInput.isEmpty() || emailInput.isEmpty() || passwordInput.isEmpty()) {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Verify OTP before creating user
-            RetrofitClient.instance.verifyOtp(VerifyOtpRequest(emailInput, otpInput))
-                .enqueue(object : Callback<ApiResponse> {
-                    override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                        if (response.isSuccessful && response.body()?.success == true) {
-                            Toast.makeText(this@RegisterActivity, "OTP Verified", Toast.LENGTH_SHORT).show()
+            viewModel.verifyOtp(emailInput, otpInput)
+        }
 
+        // LiveData observers
+        viewModel.otpSent.observe(this) {
+            Toast.makeText(this, "OTP Sent", Toast.LENGTH_SHORT).show()
+        }
 
-            auth.createUserWithEmailAndPassword(emailInput, passwordInput)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val uid = auth.currentUser?.uid ?: return@addOnCompleteListener
-                        val user = User(uid, usernameInput, emailInput, otpInput)
-                        val database = FirebaseDatabase.getInstance("https://evse-170a5-default-rtdb.asia-southeast1.firebasedatabase.app")
+        viewModel.otpVerified.observe(this) { verified ->
+            if (verified) {
+                val username = usernameEditText.text.toString().trim()
+                val email = emailEditText.text.toString().trim()
+                val password = passwordEditText.text.toString()
+                val otp = otpEditText.text.toString()
 
-                        val usersRef = database.getReference("users")
+                Toast.makeText(this, "OTP Verified", Toast.LENGTH_SHORT).show()
+                viewModel.registerUser(username, email, password, otp)
+            } else {
+                Toast.makeText(this, "OTP verification failed", Toast.LENGTH_SHORT).show()
+            }
+        }
 
-                        usersRef.child(uid).setValue(user)
-                            .addOnCompleteListener { dbTask ->
-                                if (dbTask.isSuccessful) {
-                                    Toast.makeText(this@RegisterActivity, "User data saved successfully", Toast.LENGTH_SHORT).show()
+        viewModel.registrationSuccess.observe(this) {
+            Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent) // start of new activity
+            finish() // finishing the existing activity
+        }
 
-                                    // Save to SQLite----------------------------------------------
-                                    val dbHelper = MyDatabaseHelper(this@RegisterActivity)
-                                    val inserted = dbHelper.insertUser(usernameInput, emailInput, otpInput)
-                                    if (inserted) {
-                                        Toast.makeText(this@RegisterActivity, "User stored in SQLite", Toast.LENGTH_SHORT).show()
-                                    } else {
-                                        Toast.makeText(this@RegisterActivity, "SQLite insertion failed", Toast.LENGTH_SHORT).show()
-                                    }
-                                //---------------------------------------------------------------------------
-
-                                    // SHOW success toast & NAVIGATE
-                                    Toast.makeText(this@RegisterActivity, "Registration Successful", Toast.LENGTH_SHORT).show()
-
-                                    val intent =
-                                        Intent(this@RegisterActivity, LoginActivity::class.java)
-                                    // to start new activity, it navigates to the loginActivity as it is mentioned here
-                                    startActivity(intent)
-                                    // closes the current activity (i.e registerActivity)
-                                    finish()
-                                } else {
-                                    Toast.makeText(this@RegisterActivity, "Failed to save user to DB", Toast.LENGTH_SHORT).show()
-                                    Log.e("FirebaseError", "DB Error", dbTask.exception)
-                                }
-                            }
-                    } else {
-                        Toast.makeText(this@RegisterActivity, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                        Log.e("AuthError", "Register failed", task.exception)
-                    }
-                }
-
+        viewModel.error.observe(this) {
+            Toast.makeText(this, "Error: $it", Toast.LENGTH_SHORT).show()
         }
 
         Log.d("LoginActivity", "LoginActivity started")
-
     }
-
-                    override fun onFailure(
-                        call: Call<ApiResponse?>,
-                        t: Throwable
-                    ) {
-                        TODO("Not yet implemented")
-                    }
-
-
-                })}}}
+}

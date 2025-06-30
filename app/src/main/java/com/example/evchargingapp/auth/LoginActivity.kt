@@ -2,24 +2,21 @@ package com.example.evchargingapp.auth
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.evchargingapp.home.HomePageActivity
+import androidx.lifecycle.Observer
 import com.example.evchargingapp.R
-import com.google.firebase.auth.FirebaseAuth
+import com.example.evchargingapp.home.HomePageActivity
+//import com.example.evchargingapp.auth.LoginViewModel
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
+    private val viewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
-        auth = FirebaseAuth.getInstance()
 
         val email = findViewById<EditText>(R.id.loginEmail)
         val password = findViewById<EditText>(R.id.loginPassword)
@@ -45,21 +42,22 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            auth.signInWithEmailAndPassword(emailInput, passInput)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
-
-                        // // navigation to home page----------------------------------------
-                        val intent = Intent(this, HomePageActivity::class.java)
-                        startActivity(intent)
-                        finish() // Optional: close LoginActivity so user can't go back to it
-
-                    } else {
-                        Toast.makeText(this, "Login Failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
-                    }
-                }
+            viewModel.login(emailInput, passInput)
         }
 
+        viewModel.loginSuccess.observe(this, Observer { success ->
+            if (success) {
+                Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
+
+                // // navigation to home page----------------------------------------
+                val intent = Intent(this, HomePageActivity::class.java)
+                startActivity(intent)
+                finish() // Optional: close LoginActivity so user can't go back to it
+            }
+        })
+
+        viewModel.error.observe(this, Observer { errorMsg ->
+            Toast.makeText(this, "Login Failed: $errorMsg", Toast.LENGTH_LONG).show()
+        })
     }
 }
