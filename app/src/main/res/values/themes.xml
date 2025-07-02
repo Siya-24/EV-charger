@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.EvChargingApp" parent="Theme.AppCompat.DayNight.DarkActionBar">
-        <!-- your customizations here -->
+    <style name="Theme.EvChargingApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+
+    <!-- your customizations here -->
     </style>
 
 </resources>

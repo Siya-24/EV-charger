@@ -2,6 +2,7 @@ package com.example.evchargingapp.auth
 
 import android.content.Context
 import android.util.Log
+import com.example.evchargingapp.data.ChargingPile
 import com.example.evchargingapp.data.MyDatabaseHelper
 import com.example.evchargingapp.data.User
 import com.example.evchargingapp.network.*
@@ -60,8 +61,6 @@ class AuthRepository(private val context: Context) {
                     usersRef.child(uid).setValue(user)
                         .addOnCompleteListener { dbTask ->
                             if (dbTask.isSuccessful) {
-
-                                // Save to SQLite----------------------------------------------
                                 val dbHelper = MyDatabaseHelper(context)
                                 val inserted = dbHelper.insertUser(username, email, otp)
                                 if (inserted) {
@@ -69,8 +68,6 @@ class AuthRepository(private val context: Context) {
                                 } else {
                                     onComplete(false, "SQLite insertion failed")
                                 }
-                                //---------------------------------------------------------------------------
-
                             } else {
                                 onComplete(false, dbTask.exception?.message)
                                 Log.e("FirebaseError", "DB Error", dbTask.exception)
@@ -84,14 +81,34 @@ class AuthRepository(private val context: Context) {
     }
 
     fun loginUser(email: String, password: String, onComplete: (Boolean, String?) -> Unit) {
-        FirebaseAuth.getInstance()
-            .signInWithEmailAndPassword(email, password)
+        auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     onComplete(true, null)
                 } else {
                     onComplete(false, task.exception?.message)
                 }
+            }
+    }
+
+    // ✅ ADD THIS METHOD TO FIX unresolved reference
+    fun addChargingPile(pile: ChargingPile, callback: (Boolean, String?) -> Unit) {
+        val database = FirebaseDatabase.getInstance("https://evse-170a5-default-rtdb.asia-southeast1.firebasedatabase.app")
+        val pilesRef = database.getReference("piles")
+
+        pilesRef.child(pile.id).setValue(pile)
+            .addOnSuccessListener {
+                val dbHelper = MyDatabaseHelper(context)
+                val inserted = dbHelper.insertPile(pile.id, pile.name, pile.isOnline)
+
+                if (inserted) {
+                    callback(true, null)
+                } else {
+                    callback(false, "SQLite insert failed")
+                }
+            }
+            .addOnFailureListener { e ->
+                callback(false, e.message)
             }
     }
 }

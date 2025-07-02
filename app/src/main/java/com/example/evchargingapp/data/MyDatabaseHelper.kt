@@ -9,7 +9,7 @@ class MyDatabaseHelper(context: Context) :
     SQLiteOpenHelper(context, "MyDatabase.db", null, 1) {
 
     override fun onCreate(db: SQLiteDatabase) {
-        val createTable = """
+        val createUserTable = """
             CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT,
@@ -17,11 +17,22 @@ class MyDatabaseHelper(context: Context) :
                 otp TEXT
             )
         """.trimIndent()
-        db.execSQL(createTable)
+
+        val createPileTable = """
+            CREATE TABLE piles (
+                id TEXT PRIMARY KEY,
+                name TEXT,
+                isOnline INTEGER
+            )
+        """.trimIndent()
+
+        db.execSQL(createUserTable)
+        db.execSQL(createPileTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS users")
+        db.execSQL("DROP TABLE IF EXISTS piles")
         onCreate(db)
     }
 
@@ -33,6 +44,17 @@ class MyDatabaseHelper(context: Context) :
             put("otp", otp)
         }
         val result = db.insert("users", null, values)
+        return result != -1L
+    }
+
+    fun insertPile(id: String, name: String, isOnline: Boolean): Boolean {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("id", id)
+            put("name", name)
+            put("isOnline", if (isOnline) 1 else 0)
+        }
+        val result = db.insert("piles", null, values)
         return result != -1L
     }
 

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white">
+
+    <!-- Charging Pile ID -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Charging Pile ID"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:layout_marginBottom="6dp" />
+
+    <EditText
+        android:id="@+id/etPileId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="e.g. CP-123"
+        android:inputType="text"
+        android:textColor="@android:color/black"
+        android:textColorHint="#888888"
+        android:background="@android:drawable/edit_text"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Charging Pile Name -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Charging Pile Name"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:layout_marginBottom="6dp" />
+
+    <EditText
+        android:id="@+id/etPileName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="e.g. Green Station 1"
+        android:inputType="textCapWords"
+        android:textColor="@android:color/black"
+        android:textColorHint="#888888"
+        android:background="@android:drawable/edit_text"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Status -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:layout_marginBottom="6dp" />
+
+    <Spinner
+        android:id="@+id/spinnerStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:spinnerMode="dropdown"
+        android:background="@android:drawable/btn_dropdown"
+        android:dropDownVerticalOffset="8dp"
+        android:padding="8dp" />
+
+</LinearLayout>

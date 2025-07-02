@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="#F7F7F7">
+
+    <!-- Charging Pile ID -->
+    <TextView
+        android:id="@+id/pileIdTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ID: CP001"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="#000000" />
+
+    <!-- Charging Pile Name -->
+    <TextView
+        android:id="@+id/pileNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name: Charger A"
+        android:textSize="14sp"
+        android:textColor="#333333"
+        android:layout_marginTop="4dp" />
+
+    <!-- Charging Pile Status -->
+    <TextView
+        android:id="@+id/pileStatusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status: Online"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginTop="4dp" />
+
+</LinearLayout>
