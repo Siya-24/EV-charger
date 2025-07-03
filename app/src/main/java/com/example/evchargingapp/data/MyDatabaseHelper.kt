@@ -18,16 +18,17 @@ class MyDatabaseHelper(context: Context) :
             )
         """.trimIndent()
 
-        val createPileTable = """
-            CREATE TABLE piles (
-                id TEXT PRIMARY KEY,
-                name TEXT,
-                isOnline INTEGER
-            )
+        val createPilesTable = """
+        CREATE TABLE IF NOT EXISTS piles (
+        id TEXT PRIMARY KEY,
+        name TEXT,
+        isOnline INTEGER
+        )
         """.trimIndent()
+        db.execSQL(createPilesTable)
 
         db.execSQL(createUserTable)
-        db.execSQL(createPileTable)
+
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -57,6 +58,26 @@ class MyDatabaseHelper(context: Context) :
         val result = db.insert("piles", null, values)
         return result != -1L
     }
+
+    fun getAllPiles(): List<ChargingPile> {
+        val pileList = mutableListOf<ChargingPile>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM piles", null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                val isOnline = cursor.getInt(cursor.getColumnIndexOrThrow("isOnline")) == 1
+
+                pileList.add(ChargingPile(id, name, isOnline))
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        return pileList
+    }
+
 
     fun getAllUsers(): List<String> {
         val userList = mutableListOf<String>()

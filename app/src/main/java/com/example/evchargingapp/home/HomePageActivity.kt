@@ -105,7 +105,7 @@ class HomePageActivity : AppCompatActivity() {
         val idInput = dialogView.findViewById<EditText>(R.id.etPileId)
         val statusSpinner = dialogView.findViewById<Spinner>(R.id.spinnerStatus)
 
-        // ✅ ADD THIS BLOCK BELOW — configures the spinner
+        // ✅ THIS BLOCK BELOW — configures the spinner
         val statusOptions = listOf("Online", "Offline")
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, statusOptions)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
