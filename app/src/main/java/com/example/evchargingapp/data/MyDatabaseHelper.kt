@@ -55,9 +55,10 @@ class MyDatabaseHelper(context: Context) :
             put("name", name)
             put("isOnline", if (isOnline) 1 else 0)
         }
-        val result = db.insert("piles", null, values)
+        val result = db.replace("piles", null, values) // ✅ replaces if duplicate exists
         return result != -1L
     }
+
 
     fun getAllPiles(): List<ChargingPile> {
         val pileList = mutableListOf<ChargingPile>()
@@ -77,6 +78,16 @@ class MyDatabaseHelper(context: Context) :
         cursor.close()
         return pileList
     }
+
+    fun pileExists(id: String): Boolean {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT id FROM piles WHERE id = ?", arrayOf(id))
+        val exists = cursor.moveToFirst()
+        cursor.close()
+        return exists
+    }
+
+
 
 
     fun getAllUsers(): List<String> {

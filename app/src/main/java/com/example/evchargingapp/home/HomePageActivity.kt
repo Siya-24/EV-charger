@@ -15,10 +15,36 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.evchargingapp.R
 import com.example.evchargingapp.auth.AuthRepository
 import com.example.evchargingapp.data.ChargingPile
+import com.example.evchargingapp.data.MyDatabaseHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
+import com.example.evchargingapp.auth.LoginActivity
+import com.google.firebase.auth.FirebaseAuth
 
 class HomePageActivity : AppCompatActivity() {
+
+    //bluetooth
+    private val REQUIRED_PERMISSIONS = arrayOf(
+
+        android.Manifest.permission.ACCESS_WIFI_STATE,
+        android.Manifest.permission.CHANGE_WIFI_STATE,
+
+    )
+
+    private val PERMISSION_REQUEST_CODE = 1001
+
+    private fun checkAndRequestPermissions() {
+        val missingPermissions = REQUIRED_PERMISSIONS.filter {
+            checkSelfPermission(it) != android.content.pm.PackageManager.PERMISSION_GRANTED
+        }
+
+        if (missingPermissions.isNotEmpty()) {
+            requestPermissions(missingPermissions.toTypedArray(), PERMISSION_REQUEST_CODE)
+        }
+    }
+
 
     // UI components
     private lateinit var toolbar: Toolbar
@@ -32,20 +58,28 @@ class HomePageActivity : AppCompatActivity() {
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var adapter: ChargingPileAdapter
 
-    // onCreate: Sets up everything when the activity starts
+    // Local database helper (for SQLite)
+    private lateinit var dbHelper: MyDatabaseHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_page)
 
+        checkAndRequestPermissions() // 🔧 Request WiFi/Bluetooth permissions here
+
+        dbHelper = MyDatabaseHelper(this)  // Initialize DB helper
+
         setupViews()         // Link XML views
-        setupToolbar()       // Setup toolbar at the top
-        setupRecyclerView()  // Setup RecyclerView with adapter
-        setupObservers()     // Observe data from ViewModel
-        setupFilters()       // Filter buttons: All / Online / Offline
-        setupBottomNav()     // Bottom navigation bar
+        setupToolbar()       // Set up top toolbar
+        setupRecyclerView()  // RecyclerView for pile list
+        setupObservers()     // Observe ViewModel for list changes
+        setupFilters()       // Buttons to filter piles
+        setupBottomNav()     // Bottom nav bar
     }
 
-    // Connect XML views to code
+
+
+    // Link views from XML layout
     private fun setupViews() {
         toolbar = findViewById(R.id.topToolbar)
         btnAll = findViewById(R.id.btnAll)
@@ -55,40 +89,40 @@ class HomePageActivity : AppCompatActivity() {
         bottomNav = findViewById(R.id.bottomNav)
     }
 
-    // Use the custom Toolbar as the app's ActionBar
+    // Set toolbar as ActionBar
     private fun setupToolbar() {
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Charging Pile List"
     }
 
-    // Setup RecyclerView with our ChargingPileAdapter
+    // RecyclerView setup with ChargingPileAdapter
     private fun setupRecyclerView() {
         adapter = ChargingPileAdapter()
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
     }
 
-    // Observe LiveData from ViewModel and update RecyclerView
+    // ViewModel LiveData observer to update list UI
     private fun setupObservers() {
         viewModel.filteredPiles.observe(this, Observer { list ->
             adapter.submitList(list)
         })
     }
 
-    // Setup filter buttons to show All / Online / Offline piles
+    // Filters for All / Online / Offline piles
     private fun setupFilters() {
         btnAll.setOnClickListener { viewModel.filterAll() }
         btnOnline.setOnClickListener { viewModel.filterOnline() }
         btnOffline.setOnClickListener { viewModel.filterOffline() }
     }
 
-    // Setup bottom navigation actions
+    // Bottom navigation (you can add screens later)
     private fun setupBottomNav() {
         bottomNav.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> true
                 R.id.nav_user -> {
-                    // You can navigate to User screen here
+                    // Add navigation to user screen here
                     true
                 }
                 else -> false
@@ -96,7 +130,7 @@ class HomePageActivity : AppCompatActivity() {
         }
     }
 
-    // Show dialog to add a new charging pile
+    // Dialog for adding a new charging pile
     @SuppressLint("SetTextI18n")
     private fun showAddChargingPileDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_charging_pile, null)
@@ -105,17 +139,16 @@ class HomePageActivity : AppCompatActivity() {
         val idInput = dialogView.findViewById<EditText>(R.id.etPileId)
         val statusSpinner = dialogView.findViewById<Spinner>(R.id.spinnerStatus)
 
-        // ✅ THIS BLOCK BELOW — configures the spinner
+        // Spinner options
         val statusOptions = listOf("Online", "Offline")
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, statusOptions)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         statusSpinner.adapter = spinnerAdapter
 
-
         val dialog = AlertDialog.Builder(this)
             .setTitle("Add Charging Pile")
             .setView(dialogView)
-            .setPositiveButton("Add", null)  // ✅ Important: this makes the Add button appear
+            .setPositiveButton("Add", null)
             .setNegativeButton("Cancel", null)
             .create()
 
@@ -130,6 +163,20 @@ class HomePageActivity : AppCompatActivity() {
                     val newPile = ChargingPile(id, name, isOnline)
                     val repo = AuthRepository(this)
 
+                    // ✅ Check if pile already exists in SQLite
+                    if (dbHelper.pileExists(id)) {
+                        Toast.makeText(this, "Pile ID already exists!", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+
+                    // ✅ Insert into SQLite
+                    val inserted = dbHelper.insertPile(id, name, isOnline)
+                    if (!inserted) {
+                        Toast.makeText(this, "SQLite insertion failed", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+
+                    // ✅ Push to Firebase & update ViewModel/UI
                     repo.addChargingPile(newPile) { success, message ->
                         if (success) {
                             viewModel.addChargingPile(newPile)
@@ -148,15 +195,23 @@ class HomePageActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    // Inflate the toolbar menu (includes "+" button)
+    // Inflate top-right menu (+ button)
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_home_top, menu)
         return true
     }
 
-    // Handle clicks on toolbar menu items
+    // Handle top-right "+" button
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_logout -> {
+                FirebaseAuth.getInstance().signOut()
+                val prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+                prefs.edit().clear().apply()
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
+                true
+            }
             R.id.action_add_charger -> {
                 showAddChargingPileDialog()
                 true
@@ -164,4 +219,5 @@ class HomePageActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 }

@@ -1,6 +1,8 @@
 package com.example.evchargingapp.auth
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.widget.*
 import androidx.activity.viewModels
@@ -13,6 +15,13 @@ import com.example.evchargingapp.home.HomePageActivity
 class LoginActivity : AppCompatActivity() {
 
     private val viewModel: LoginViewModel by viewModels()
+
+    // 🔌 Check network connection before attempting login
+    private fun isNetworkAvailable(): Boolean {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = cm.activeNetworkInfo
+        return network != null && network.isConnected
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +46,18 @@ class LoginActivity : AppCompatActivity() {
             val emailInput = email.text.toString().trim()
             val passInput = password.text.toString().trim()
 
+
             if (emailInput.isEmpty() || passInput.isEmpty()) {
                 Toast.makeText(this, "Enter all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             viewModel.login(emailInput, passInput)
+
+            if (!isNetworkAvailable()) {
+                Toast.makeText(this, "No internet connection. Please connect to Wi-Fi.", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
         }
 
         viewModel.loginSuccess.observe(this, Observer { success ->
@@ -59,5 +74,15 @@ class LoginActivity : AppCompatActivity() {
         viewModel.error.observe(this, Observer { errorMsg ->
             Toast.makeText(this, "Login Failed: $errorMsg", Toast.LENGTH_LONG).show()
         })
+
+        // To save the data in shared preferences so that once the user logs in they will not log out unless the user los out themselves
+        val prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        if (prefs.getBoolean("isLoggedIn", false)) {
+            startActivity(Intent(this, HomePageActivity::class.java))
+            finish()
+        }
+
     }
 }
+
+
