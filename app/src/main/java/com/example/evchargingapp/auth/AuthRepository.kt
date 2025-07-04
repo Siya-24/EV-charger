@@ -17,7 +17,7 @@ class AuthRepository(private val context: Context) {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     fun sendOtp(email: String, callback: (Boolean, String?) -> Unit) {
-        RetrofitClient.instance.sendOtp(SendOtpRequest(email))
+        OtpRetrofitClient.instance.sendOtp(SendOtpRequest(email))
             .enqueue(object : Callback<ApiResponse> {
                 override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
                     callback(response.isSuccessful, null)
@@ -30,7 +30,7 @@ class AuthRepository(private val context: Context) {
     }
 
     fun verifyOtp(email: String, otp: String, callback: (Boolean) -> Unit) {
-        RetrofitClient.instance.verifyOtp(VerifyOtpRequest(email, otp))
+        OtpRetrofitClient.instance.verifyOtp(VerifyOtpRequest(email, otp))
             .enqueue(object : Callback<ApiResponse> {
                 override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
                     callback(response.isSuccessful && response.body()?.success == true)

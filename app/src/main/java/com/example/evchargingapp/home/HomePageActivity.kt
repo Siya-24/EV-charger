@@ -25,27 +25,6 @@ import com.google.firebase.auth.FirebaseAuth
 
 class HomePageActivity : AppCompatActivity() {
 
-    //bluetooth
-    private val REQUIRED_PERMISSIONS = arrayOf(
-
-        android.Manifest.permission.ACCESS_WIFI_STATE,
-        android.Manifest.permission.CHANGE_WIFI_STATE,
-
-    )
-
-    private val PERMISSION_REQUEST_CODE = 1001
-
-    private fun checkAndRequestPermissions() {
-        val missingPermissions = REQUIRED_PERMISSIONS.filter {
-            checkSelfPermission(it) != android.content.pm.PackageManager.PERMISSION_GRANTED
-        }
-
-        if (missingPermissions.isNotEmpty()) {
-            requestPermissions(missingPermissions.toTypedArray(), PERMISSION_REQUEST_CODE)
-        }
-    }
-
-
     // UI components
     private lateinit var toolbar: Toolbar
     private lateinit var btnAll: Button
@@ -65,7 +44,10 @@ class HomePageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_page)
 
-        checkAndRequestPermissions() // 🔧 Request WiFi/Bluetooth permissions here
+        // for the log out option
+        val prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        prefs.edit().clear().apply() // or .remove("isLoggedIn")
+
 
         dbHelper = MyDatabaseHelper(this)  // Initialize DB helper
 

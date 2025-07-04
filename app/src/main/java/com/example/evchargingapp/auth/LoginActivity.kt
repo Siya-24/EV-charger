@@ -25,6 +25,18 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 🔐 Access shared preferences
+        val prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+
+        // ✅ If user already logged in, go directly to HomePage
+        if (prefs.getBoolean("isLoggedIn", false)) {
+            startActivity(Intent(this, HomePageActivity::class.java))
+            finish()
+            return
+        }
+
+        // 🧾 If user is not logged in, show the login screen layout
         setContentView(R.layout.activity_login)
 
         val email = findViewById<EditText>(R.id.loginEmail)
@@ -75,12 +87,6 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(this, "Login Failed: $errorMsg", Toast.LENGTH_LONG).show()
         })
 
-        // To save the data in shared preferences so that once the user logs in they will not log out unless the user los out themselves
-        val prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-        if (prefs.getBoolean("isLoggedIn", false)) {
-            startActivity(Intent(this, HomePageActivity::class.java))
-            finish()
-        }
 
     }
 }

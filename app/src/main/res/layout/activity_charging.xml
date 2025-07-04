@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/chargingRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:orientation="vertical"
+    android:background="#FAFAFA">
+
+    <!-- 🔌 Pile ID -->
+    <TextView
+        android:id="@+id/tvPileId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pile ID: --"
+        android:textColor="#000"
+        android:textSize="18sp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 🏷️ Pile Name -->
+    <TextView
+        android:id="@+id/tvPileName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pile Name: --"
+        android:textColor="#000"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- 🌡️ Temperature -->
+    <TextView
+        android:id="@+id/tvTemperature"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Temperature: -- °C"
+        android:textColor="#555"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- ⚡ Voltage -->
+    <TextView
+        android:id="@+id/tvVoltage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Voltage: -- V"
+        android:textColor="#555"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 🔌 Current -->
+    <TextView
+        android:id="@+id/tvCurrent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Current: -- A"
+        android:textColor="#555"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 🔋 Energy (Meter Reading) -->
+    <TextView
+        android:id="@+id/tvMeter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Energy: -- kWh"
+        android:textColor="#555"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- ⏱️ Charging Time -->
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Time: -- min"
+        android:textColor="#555"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- ⚙️ Charging Status -->
+    <TextView
+        android:id="@+id/tvChargingStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Status: Not started"
+        android:textStyle="bold"
+        android:textColor="#00796B"
+        android:textSize="18sp"
+        android:layout_marginBottom="24dp" />
+
+    <!-- ⏳ Progress Bar -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        style="?android:attr/progressBarStyleLarge" />
+
+    <!-- 🚀 Start/Stop Charging Button -->
+    <Button
+        android:id="@+id/btnStartCharging"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Charging"
+        android:textAllCaps="false"
+        android:backgroundTint="#388E3C"
+        android:textColor="@android:color/white"
+        android:padding="14dp"
+        android:stateListAnimator="@null"
+        android:layout_marginTop="24dp" />
+
+</LinearLayout>

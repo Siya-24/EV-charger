@@ -1,13 +1,10 @@
 package com.example.evchargingapp.network
 
-import com.example.evchargingapp.network.ApiResponse
-import com.example.evchargingapp.network.SendOtpRequest
-import com.example.evchargingapp.network.VerifyOtpRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-interface ApiService {
+interface OtpApiService {
 
     @POST("sendOtp")
     fun sendOtp(@Body request: SendOtpRequest): Call<ApiResponse>

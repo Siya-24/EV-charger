@@ -39,7 +39,10 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        viewBinding = true
     }
+
+
 }
 
 
@@ -87,6 +90,8 @@ dependencies {
     // Material Design + Navigation Drawer
     implementation(libs.androidx.drawerlayout)
     implementation(libs.material)
+
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
 
 
 
