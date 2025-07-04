@@ -1,92 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/chargingRoot"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
-    android:orientation="vertical"
-    android:background="#FAFAFA">
+    android:background="#1D1D1D"
+    android:padding="16dp">
 
-    <!-- 🔌 Pile ID -->
+    <!-- 🔙 Back Arrow -->
+    <ImageView
+        android:id="@+id/backArrow"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@android:drawable/ic_menu_revert"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        app:tint="#FFC107" />
+
+    <!-- 🆔 Pile ID -->
     <TextView
         android:id="@+id/tvPileId"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Pile ID: --"
-        android:textColor="#000"
-        android:textSize="18sp"
-        android:layout_marginBottom="8dp" />
-
-    <!-- 🏷️ Pile Name -->
-    <TextView
-        android:id="@+id/tvPileName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Pile Name: --"
-        android:textColor="#000"
-        android:textSize="18sp"
-        android:layout_marginBottom="16dp" />
+        android:text="AC01"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:background="#333333"
+        android:padding="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- 🌡️ Temperature -->
     <TextView
         android:id="@+id/tvTemperature"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Temperature: -- °C"
-        android:textColor="#555"
+        android:text="Celsius (℃)\n0°"
+        android:textColor="#FFC107"
         android:textSize="16sp"
-        android:layout_marginBottom="8dp" />
+        android:textAlignment="center"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/tvPileId"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp" />
 
-    <!-- ⚡ Voltage -->
-    <TextView
-        android:id="@+id/tvVoltage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Voltage: -- V"
-        android:textColor="#555"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp" />
+    <!-- ⚡ Bolt Icon -->
+    <ImageView
+        android:id="@+id/boltIcon"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@android:drawable/ic_menu_compass"
+        android:padding="24dp"
+        app:layout_constraintTop_toBottomOf="@id/tvTemperature"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        app:tint="#FFC107" />
 
-    <!-- 🔌 Current -->
-    <TextView
-        android:id="@+id/tvCurrent"
-        android:layout_width="match_parent"
+    <!-- 📊 Stats Row -->
+    <LinearLayout
+        android:id="@+id/statsRow"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Current: -- A"
-        android:textColor="#555"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp" />
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="4"
+        app:layout_constraintTop_toBottomOf="@id/boltIcon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp">
 
-    <!-- 🔋 Energy (Meter Reading) -->
-    <TextView
-        android:id="@+id/tvMeter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Energy: -- kWh"
-        android:textColor="#555"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp" />
+        <TextView
+            android:id="@+id/tvVoltage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="⚡\nVoltage\n0 V"
+            android:textColor="#FFFFFF"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textSize="14sp" />
 
-    <!-- ⏱️ Charging Time -->
-    <TextView
-        android:id="@+id/tvTime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Time: -- min"
-        android:textColor="#555"
-        android:textSize="16sp"
-        android:layout_marginBottom="16dp" />
+        <TextView
+            android:id="@+id/tvMeter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="🔋\nElectric Meter\n0 kWh"
+            android:textColor="#FFFFFF"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvCurrent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="⚙\nCurrent\n0 A"
+            android:textColor="#FFFFFF"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="⏱\nTime\n0 min"
+            android:textColor="#FFFFFF"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textSize="14sp" />
+    </LinearLayout>
 
     <!-- ⚙️ Charging Status -->
     <TextView
         android:id="@+id/tvChargingStatus"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Status: Not started"
         android:textStyle="bold"
         android:textColor="#00796B"
         android:textSize="18sp"
-        android:layout_marginBottom="24dp" />
+        app:layout_constraintTop_toBottomOf="@id/statsRow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp" />
 
     <!-- ⏳ Progress Bar -->
     <ProgressBar
@@ -95,7 +141,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
-        style="?android:attr/progressBarStyleLarge" />
+        style="?android:attr/progressBarStyleLarge"
+        app:layout_constraintTop_toBottomOf="@id/tvChargingStatus"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
 
     <!-- 🚀 Start/Stop Charging Button -->
     <Button
@@ -103,11 +153,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Start Charging"
-        android:textAllCaps="false"
-        android:backgroundTint="#388E3C"
-        android:textColor="@android:color/white"
-        android:padding="14dp"
-        android:stateListAnimator="@null"
-        android:layout_marginTop="24dp" />
-
-</LinearLayout>
+        android:textColor="#000000"
+        android:backgroundTint="#FFC107"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="24dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>
