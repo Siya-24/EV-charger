@@ -6,51 +6,51 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import com.example.evchargingapp.R
 import com.example.evchargingapp.databinding.ActivityChargingBinding
-import com.example.evchargingapp.charging.ChargingRepository
 import com.example.evchargingapp.viewmodel.ChargingViewModelFactory
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
- * Activity to show charging details and trigger charging.
+ * Activity to show charging details, control charging process,
+ * and display live charging data.
  */
 class ChargingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChargingBinding
 
-    // Inject pileId from intent and initialize ViewModel with factory
+    // Get pileId and initialize ViewModel using factory with repository injection
     private val viewModel: ChargingViewModel by viewModels {
         ChargingViewModelFactory(
             intent.getStringExtra("pileId") ?: "",
-            ChargingRepository() // Inject the repository
+            ChargingRepository()
         )
     }
 
-
-    private var isCharging = false // Toggle state of charging
+    private var isCharging = false // Track charging state
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChargingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Display the pile name dynamically from intent
+        val pileName = intent.getStringExtra("pileName") ?: "Unknown"
+        binding.tvPileId.text = "Pile: $pileName"
+
         setupUI()
         observeViewModel()
-        viewModel.loadChargingInfo() // Initial API fetch
+        viewModel.loadChargingInfo() // Fetch charging info on load
     }
 
     /**
-     * Set up UI listeners and visual feedback
+     * Sets up UI interactions and button click behavior.
      */
     private fun setupUI() {
         binding.btnStartCharging.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
 
             if (!isCharging) {
-                // Start charging
+                // 🔌 Start charging if currently not charging
                 viewModel.startCharging { success, message ->
                     binding.progressBar.visibility = View.GONE
 
@@ -63,7 +63,7 @@ class ChargingActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                // Stop charging
+                // 🛑 Stop charging if currently charging
                 viewModel.stopCharging { success, message ->
                     binding.progressBar.visibility = View.GONE
 
@@ -79,6 +79,9 @@ class ChargingActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Updates UI based on current charging status.
+     */
     private fun updateChargingUI() {
         binding.btnStartCharging.text = if (isCharging) "Stop Charging" else "Start Charging"
         val color = if (isCharging) R.color.red else R.color.green
@@ -86,9 +89,8 @@ class ChargingActivity : AppCompatActivity() {
         binding.tvChargingStatus.text = if (isCharging) "Status: Charging" else "Status: Not Charging"
     }
 
-
     /**
-     * Observe charging data (voltage, current, etc.)
+     * Observes LiveData from ViewModel and updates the UI with real-time values.
      */
     private fun observeViewModel() {
         viewModel.chargingInfo.observe(this) { info ->
@@ -99,5 +101,4 @@ class ChargingActivity : AppCompatActivity() {
             binding.tvTime.text = info.time
         }
     }
-
 }
