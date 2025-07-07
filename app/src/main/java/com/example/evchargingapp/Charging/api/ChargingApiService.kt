@@ -24,4 +24,8 @@ interface ChargingApiService {
     // Trigger start charging
     @POST("charging/{pileId}/start")
     fun startCharging(@Path("pileId") pileId: String): Call<Void>
+
+    @POST("charging/{pileId}/stop")
+    fun stopCharging(@Path("pileId") pileId: String): Call<Void>
+
 }

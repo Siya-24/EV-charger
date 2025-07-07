@@ -3,28 +3,27 @@ package com.example.evchargingapp.charging
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.evchargingapp.charging.api.ChargingApiService
-import com.example.evchargingapp.charging.api.ChargingRetrofitClient
 import com.example.evchargingapp.charging.model.ChargingInfoResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 /**
- * ViewModel to manage charging info state and API interactions.
+ * ViewModel to interact with the ChargingRepository and expose data to the UI.
  */
-class ChargingViewModel(private val pileId: String) : ViewModel() {
-
-    private val apiService: ChargingApiService = ChargingRetrofitClient.instance
+class ChargingViewModel(
+    private val pileId: String,
+    private val repository: ChargingRepository
+) : ViewModel() {
 
     private val _chargingInfo = MutableLiveData<ChargingInfoResponse>()
     val chargingInfo: LiveData<ChargingInfoResponse> get() = _chargingInfo
 
     /**
-     * Fetch initial charger status from backend.
+     * Loads current charging status.
      */
     fun loadChargingInfo() {
-        apiService.getChargingInfo(pileId).enqueue(object : Callback<ChargingInfoResponse> {
+        repository.getChargingInfo(pileId).enqueue(object : Callback<ChargingInfoResponse> {
             override fun onResponse(call: Call<ChargingInfoResponse>, response: Response<ChargingInfoResponse>) {
                 if (response.isSuccessful) {
                     _chargingInfo.value = response.body()
@@ -32,16 +31,31 @@ class ChargingViewModel(private val pileId: String) : ViewModel() {
             }
 
             override fun onFailure(call: Call<ChargingInfoResponse>, t: Throwable) {
-                // Optionally log error
+                // Handle failure (optional)
             }
         })
     }
 
     /**
-     * Trigger the start charging API.
+     * Starts the charging session.
      */
     fun startCharging(callback: (Boolean, String?) -> Unit) {
-        apiService.startCharging(pileId).enqueue(object : Callback<Void> {
+        repository.startCharging(pileId).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                callback(response.isSuccessful, null)
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                callback(false, t.message)
+            }
+        })
+    }
+
+    /**
+     * Stops the charging session.
+     */
+    fun stopCharging(callback: (Boolean, String?) -> Unit) {
+        repository.stopCharging(pileId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 callback(response.isSuccessful, null)
             }
