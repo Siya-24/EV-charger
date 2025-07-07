@@ -76,10 +76,11 @@ class ChargingActivity : AppCompatActivity() {
     private fun observeViewModel() {
         viewModel.chargingInfo.observe(this) { info ->
             binding.tvTemperature.text = "${info.temperature} °C"
-            binding.tvVoltage.text = "${info.voltage} V"
-            binding.tvMeter.text = "${info.meterReading} kWh"
-            binding.tvCurrent.text = "${info.current} A"
-            binding.tvTime.text = "${info.duration} min"
+            binding.tvVoltage.text = info.voltage
+            binding.tvMeter.text = info.energy
+            binding.tvCurrent.text = info.current
+            binding.tvTime.text = info.time
         }
     }
+
 }
