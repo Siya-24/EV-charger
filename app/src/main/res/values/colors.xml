@@ -9,4 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FF5252</color>
     <color name="green">#4CAF50</color>
+    <color name="green_border">#28FFCA</color>
+    <color name="green_accent">#28FFCA</color>
+    <color name="userpage_green_border">#00E676</color>
 </resources>

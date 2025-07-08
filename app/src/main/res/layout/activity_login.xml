@@ -1,132 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:gravity="center_horizontal"
+    android:paddingTop="0dp"
+    android:paddingBottom="0dp">
 
+    <!-- Main content with green border -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center_horizontal">
+        android:layout_height="match_parent"
+        android:background="#1F2626"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
-        <!-- Top Car Image -->
+
+        <!-- Section with dissolving #051D26 background -->
+
         <ImageView
-            android:id="@+id/carImage"
-            android:layout_width="250dp"
-            android:layout_height="150dp"
+            android:layout_width="450dp"
+            android:layout_height="200dp"
             android:scaleType="centerCrop"
-            android:layout_marginBottom="12dp"
-            tools:ignore="ContentDescription" />
+            android:src="@drawable/evp" />
 
-        <!-- Logo -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:background="@drawable/dissolve_section_background"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Plug-In"
+                android:textColor="@color/white"
+                android:textSize="40sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="350px"
+                android:paddingTop="0dp"
+                android:text="by Nippon"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="00px"
+                android:text="@string/login_to_account"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+        </LinearLayout>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="0dp"
-            android:text="Plug"
-            android:textColor="#78909C"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText" />
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="100dp"
+            android:text="@string/enter_email"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="IN"
-            android:textColor="#689F38"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText" />
-
-        <!-- Title -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Login to your account"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:layout_marginTop="8dp"
-            tools:ignore="HardcodedText" />
-
-        <!-- Email -->
         <EditText
             android:id="@+id/loginEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="enter email here"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/black_button_green_border"
+            android:hint="@string/enter_email_hint"
             android:inputType="textEmailAddress"
-            android:layout_marginTop="20dp"
+            android:padding="10dp"
+            android:textColor="@color/white"
+            android:textColorHint="#B0B3B8" />
 
-            android:padding="12dp"
-            tools:ignore="Autofill,HardcodedText" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="81dp"
+            android:text="@string/enter_password"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
-        <!-- Password -->
         <EditText
             android:id="@+id/loginPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="enter your password"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/black_button_green_border"
+            android:hint="@string/enter_password_hint"
             android:inputType="textPassword"
-            android:layout_marginTop="12dp"
-
             android:padding="12dp"
-            tools:ignore="Autofill,HardcodedText" />
+            android:textColor="@color/white"
+            android:textColorHint="#888888" />
 
-        <!-- Forgot Password -->
         <TextView
             android:id="@+id/forgotPasswordText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:minHeight="48dp"
-            android:text="forgot your password?"
-            android:textColor="#0000EE"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText" />
+            android:layout_marginLeft="100dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:text="@string/forgot_password"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
-        <!-- Login Button -->
         <Button
             android:id="@+id/loginBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="login →"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#000000"
-            android:layout_marginTop="20dp"
-            tools:ignore="HardcodedText,VisualLintButtonSize" />
+            android:layout_width="300dp"
+            android:layout_height="46dp"
+            android:background="@drawable/dark_button_background"
+            android:text="Login"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            android:textStyle="bold" />
 
-        <!-- Register Link -->
         <TextView
             android:id="@+id/registerLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:minHeight="48dp"
-            android:text="Register yourself"
-            android:textColor="#0000EE"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText" />
+            android:layout_marginLeft="90dp"
+            android:layout_marginTop="1dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="8dp"
+            android:text="@string/new_user_register"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
-        <!-- Google Sign-in -->
         <Button
             android:id="@+id/googleSignInBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sign up with Google"
-            android:backgroundTint="#000000"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="12dp"
-            tools:ignore="HardcodedText,VisualLintButtonSize" />
+            android:layout_width="300dp"
+            android:layout_height="46dp"
+            android:background="@drawable/dark_button_background"
+            android:text="Sign-up with Google"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
     </LinearLayout>
-</ScrollView>
+
+</LinearLayout>
+
+
+
+
+
+
+
+
+
+
+

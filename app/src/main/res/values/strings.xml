@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">EvChargingApp</string>
+    <string name="evchargingapp">EvChargingApp</string>
 
     <!-- *************************************************************************************** -->
     <!-- Strings for Charging Stats Page -->
@@ -13,5 +13,38 @@
     <string name="approx_time_to_target_percentage">Approx. Time to Target Percentage</string>
     <string name="dash">-</string> <!-- For initial empty text where data will be loaded -->
     <!-- ****************************************************************************************-->
+
+        <string name="devices">Devices</string>
+        <string name="all">All</string>
+        <string name="online">Online</string>
+        <string name="offline">Offline</string>
+        <string name="home">Home</string>
+        <string name="user">User</string>
+        <string name="plugin">Plug-In</string>
+        <string name="login_to_account">Log in to your account</string>
+        <string name="enter_email">Enter email:</string>
+        <string name="enter_email_hint">Enter email here</string>
+        <string name="enter_password">Enter password:</string>
+        <string name="enter_password_hint">Enter password here</string>
+        <string name="forgot_password">Forgot your password?</string>
+        <string name="login_button">Login -&gt;</string>
+        <string name="new_user_register">New user?Register yourself</string>
+        <string name="signup_with_google">Sign-up with Google</string>
+        <string name="user_header">User</string>
+        <string name="charger_management">Charger Management</string>
+        <string name="charging_pile_networking">Charging Pile Networking</string>
+        <string name="account_settings">Account Settings</string>
+        <string name="change_language">Change Language</string>
+        <string name="logout">Logout</string>
+        <string name="user_logo">User logo</string>
+        <string name="add_charging_pile">Add Charging Pile</string>
+        <string name="charging_pile_id">Charging Pile ID</string>
+        <string name="charging_pile_id_hint">e.g. CP-123</string>
+        <string name="charging_pile_name">Charging Pile Name</string>
+        <string name="charging_pile_name_hint">e.g. Green Station 1</string>
+        <string name="status">Status</string>
+        <string name="cancel">CANCEL</string>
+        <string name="add">ADD</string>
+
 
 </resources>
