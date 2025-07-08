@@ -92,14 +92,29 @@ class AuthRepository(private val context: Context) {
     }
 
     // ✅ ADD THIS METHOD TO FIX unresolved reference
+    /**
+     * Adds a new charging pile to Firebase under the current user's node
+     * and also stores it locally in SQLite for offline access.
+     *
+     * @param pile The ChargingPile object to be added
+     * @param callback Called with (true, null) if successful, or (false, errorMessage) if failed
+     */
     fun addChargingPile(pile: ChargingPile, callback: (Boolean, String?) -> Unit) {
         val database = FirebaseDatabase.getInstance("https://evse-170a5-default-rtdb.asia-southeast1.firebasedatabase.app")
-        val pilesRef = database.getReference("piles")
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (uid == null) {
+            callback(false, "User not logged in")
+            return
+        }
+
+        val pilesRef = database.getReference("users").child(uid).child("piles")
 
         pilesRef.child(pile.id).setValue(pile)
             .addOnSuccessListener {
                 val dbHelper = MyDatabaseHelper(context)
-                val inserted = dbHelper.insertPile(pile.id, pile.name, pile.isOnline)
+                // Pass userId here to scope the pile correctly in SQLite
+                val inserted = dbHelper.insertPile(uid, pile.id, pile.name, pile.isOnline)
 
                 if (inserted) {
                     callback(true, null)
@@ -111,4 +126,7 @@ class AuthRepository(private val context: Context) {
                 callback(false, e.message)
             }
     }
+
+
+
 }

@@ -24,7 +24,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 class HomePageActivity : AppCompatActivity() {
 
-    // 🔗 UI components
+    // UI components linked to layout views
     private lateinit var toolbar: Toolbar
     private lateinit var btnAll: Button
     private lateinit var btnOnline: Button
@@ -32,32 +32,36 @@ class HomePageActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var bottomNav: BottomNavigationView
 
-    // 🧠 ViewModel and Adapter
+    // ViewModel for managing piles list and filtering
     private val viewModel: HomeViewModel by viewModels()
+
+    // Adapter for RecyclerView to display charging piles
     private lateinit var adapter: ChargingPileAdapter
 
-    // 💾 Local database helper (SQLite)
+    // Local SQLite database helper instance
     private lateinit var dbHelper: MyDatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_page)
 
-        // 🧹 Clear login state (temporary if you're logging out immediately)
+        // Clear shared preferences related to user (optional, can be removed if not needed)
         val prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         prefs.edit().clear().apply()
 
-        dbHelper = MyDatabaseHelper(this)  // Initialize DB helper
+        // Initialize database helper
+        dbHelper = MyDatabaseHelper(this)
 
+        // Set up UI components and behavior
         setupViews()
         setupToolbar()
-        setupRecyclerView()   // ⚠️ updated to support pile click
+        setupRecyclerView()
         setupObservers()
         setupFilters()
         setupBottomNav()
     }
 
-    // 🔗 Link views to layout
+    // Link UI elements with XML layout views
     private fun setupViews() {
         toolbar = findViewById(R.id.topToolbar)
         btnAll = findViewById(R.id.btnAll)
@@ -67,17 +71,18 @@ class HomePageActivity : AppCompatActivity() {
         bottomNav = findViewById(R.id.bottomNav)
     }
 
-    // 🧭 Toolbar setup
+    // Setup toolbar title and action bar
     private fun setupToolbar() {
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Charging Pile List"
     }
 
-    // 🧱 Set up RecyclerView and handle pile click
+    // Setup RecyclerView with adapter and item click listener
     private fun setupRecyclerView() {
         adapter = ChargingPileAdapter { selectedPile ->
             Toast.makeText(this, "Clicked: ${selectedPile.id}", Toast.LENGTH_SHORT).show()
 
+            // Open ChargingActivity on pile click, passing pile info via Intent
             val intent = Intent(this, ChargingActivity::class.java)
             intent.putExtra("pileId", selectedPile.id)
             intent.putExtra("pileName", selectedPile.name)
@@ -86,30 +91,29 @@ class HomePageActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
-
     }
 
-    // 🔁 Observe changes from ViewModel
+    // Observe filtered piles LiveData from ViewModel and update adapter
     private fun setupObservers() {
         viewModel.filteredPiles.observe(this, Observer { list ->
             adapter.submitList(list)
         })
     }
 
-    // 🔘 Filter buttons
+    // Set click listeners on filter buttons to update displayed list
     private fun setupFilters() {
         btnAll.setOnClickListener { viewModel.filterAll() }
         btnOnline.setOnClickListener { viewModel.filterOnline() }
         btnOffline.setOnClickListener { viewModel.filterOffline() }
     }
 
-    // ⛴ Bottom navigation setup (extendable)
+    // Setup bottom navigation view (can be expanded with more functionality)
     private fun setupBottomNav() {
         bottomNav.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> true
+                R.id.nav_home -> true  // Stay on home
                 R.id.nav_user -> {
-                    // Navigate to user page (future)
+                    // TODO: Navigate to user profile or settings
                     true
                 }
                 else -> false
@@ -117,7 +121,11 @@ class HomePageActivity : AppCompatActivity() {
         }
     }
 
-    // ➕ Dialog for adding a new charging pile
+    /**
+     * Shows a dialog to add a new charging pile.
+     * Validates input, checks for duplicate pile ID scoped to user,
+     * inserts into SQLite, then adds to Firebase using AuthRepository.
+     */
     @SuppressLint("SetTextI18n")
     private fun showAddChargingPileDialog() {
         val dialogView = LayoutInflater.from(this)
@@ -127,6 +135,7 @@ class HomePageActivity : AppCompatActivity() {
         val idInput = dialogView.findViewById<EditText>(R.id.etPileId)
         val statusSpinner = dialogView.findViewById<Spinner>(R.id.spinnerStatus)
 
+        // Setup spinner with "Online" and "Offline" options
         val statusOptions = listOf("Online", "Offline")
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, statusOptions)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -135,7 +144,7 @@ class HomePageActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this)
             .setTitle("Add Charging Pile")
             .setView(dialogView)
-            .setPositiveButton("Add", null)
+            .setPositiveButton("Add", null)  // We override click later to prevent auto-dismiss
             .setNegativeButton("Cancel", null)
             .create()
 
@@ -146,32 +155,46 @@ class HomePageActivity : AppCompatActivity() {
                 val name = nameInput.text.toString().trim()
                 val isOnline = statusSpinner.selectedItem.toString() == "Online"
 
-                if (id.isNotEmpty() && name.isNotEmpty()) {
-                    val newPile = ChargingPile(id, name, isOnline)
-                    val repo = AuthRepository(this)
-
-                    if (dbHelper.pileExists(id)) {
-                        Toast.makeText(this, "Pile ID already exists!", Toast.LENGTH_SHORT).show()
-                        return@setOnClickListener
-                    }
-
-                    val inserted = dbHelper.insertPile(id, name, isOnline)
-                    if (!inserted) {
-                        Toast.makeText(this, "SQLite insertion failed", Toast.LENGTH_SHORT).show()
-                        return@setOnClickListener
-                    }
-
-                    repo.addChargingPile(newPile) { success, message ->
-                        if (success) {
-                            viewModel.addChargingPile(newPile)
-                            Toast.makeText(this, "Charging pile added!", Toast.LENGTH_SHORT).show()
-                            dialog.dismiss()
-                        } else {
-                            Toast.makeText(this, "Failed: $message", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                } else {
+                // Check required fields
+                if (id.isEmpty() || name.isEmpty()) {
                     Toast.makeText(this, "Please enter all fields", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                // Get current user UID to scope piles per user
+                val uid = FirebaseAuth.getInstance().currentUser?.uid
+                if (uid == null) {
+                    Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                // Check if pile ID already exists for this user
+                if (dbHelper.pileExists(uid, id)) {
+                    Toast.makeText(this, "Pile ID already exists!", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                // Insert pile into local SQLite DB scoped by user
+                val inserted = dbHelper.insertPile(uid, id, name, isOnline)
+                if (!inserted) {
+                    Toast.makeText(this, "SQLite insertion failed", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                // Create ChargingPile object
+                val newPile = ChargingPile(id, name, isOnline)
+
+                // Add pile to Firebase under user's node
+                val repo = AuthRepository(this)
+                repo.addChargingPile(newPile) { success, message ->
+                    if (success) {
+                        // Update ViewModel and UI
+                        viewModel.addChargingPile(newPile)
+                        Toast.makeText(this, "Charging pile added!", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+                    } else {
+                        Toast.makeText(this, "Failed: $message", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -179,12 +202,13 @@ class HomePageActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    // Top-right "+" and logout menu
+    // Inflate menu with logout and add pile options
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_home_top, menu)
         return true
     }
 
+    // Handle toolbar menu item clicks for logout and add pile
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_logout -> {

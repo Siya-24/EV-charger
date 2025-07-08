@@ -1,8 +1,9 @@
 package com.example.evchargingapp.charging
 
-import com.example.evchargingapp.charging.api.ChargingApiService
+import ChargingApiService
 import com.example.evchargingapp.charging.api.ChargingRetrofitClient
 import com.example.evchargingapp.charging.model.ChargingInfoResponse
+import okhttp3.ResponseBody
 import retrofit2.Call
 
 /**
@@ -16,11 +17,11 @@ class ChargingRepository {
         return apiService.getChargingInfo(pileId)
     }
 
-    fun startCharging(pileId: String): Call<Void> {
+    fun startCharging(pileId: String): Call<ResponseBody> {
         return apiService.startCharging(pileId)
     }
 
-    fun stopCharging(pileId: String): Call<Void> {
+    fun stopCharging(pileId: String): Call<ResponseBody> {
         return apiService.stopCharging(pileId)
     }
 }

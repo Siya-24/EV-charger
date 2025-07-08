@@ -9,45 +9,49 @@ import com.example.evchargingapp.data.MyDatabaseHelper
 import com.google.firebase.database.*
 
 /**
- * ViewModel responsible for managing Charging Pile data and applying filters.
- * Uses both SQLite and Firebase Realtime Database.
+ * ViewModel managing Charging Pile data and filters.
+ * Syncs data between Firebase Realtime Database and local SQLite DB (user-scoped).
  */
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
-    // Database helper for local SQLite operations
+    // SQLite DB helper instance
     private val dbHelper = MyDatabaseHelper(application.applicationContext)
 
-    // LiveData exposed to UI to observe filtered charging piles
+    // LiveData to expose filtered piles list to UI
     private val _allPiles = MutableLiveData<List<ChargingPile>>()
     val filteredPiles: LiveData<List<ChargingPile>> = _allPiles
 
-    // In-memory full list of charging piles (source of truth)
+    // In-memory full list of charging piles (source for filters)
     private var fullList: List<ChargingPile> = emptyList()
 
-    // Firebase Realtime Database reference
-    private val dbRef: DatabaseReference = FirebaseDatabase
-        .getInstance("https://evse-170a5-default-rtdb.asia-southeast1.firebasedatabase.app")
-        .getReference("piles")
-
     init {
-        // Load from SQLite and Firebase when ViewModel is initialized
+        // Load from local DB and sync with Firebase on ViewModel creation
         loadPilesFromLocalDB()
-        syncFromFirebase()  // keeps Firebase as source of truth
+        syncFromFirebase()
     }
 
     /**
-     * Load all charging piles from local SQLite database.
+     * Loads all piles from local SQLite DB for the current user.
      */
     private fun loadPilesFromLocalDB() {
-        fullList = dbHelper.getAllPiles()
+        val uid = getCurrentUserId() ?: return
+
+        fullList = dbHelper.getAllPiles(uid)
         _allPiles.value = fullList
     }
 
     /**
-     * Fetch charging piles from Firebase and update both memory and SQLite DB.
+     * Syncs piles from Firebase Realtime Database under "users/{uid}/piles".
+     * Updates local SQLite DB and LiveData to keep UI consistent.
      */
     private fun syncFromFirebase() {
-        dbRef.addValueEventListener(object : ValueEventListener {
+        val uid = getCurrentUserId() ?: return
+
+        val userPilesRef = FirebaseDatabase
+            .getInstance("https://evse-170a5-default-rtdb.asia-southeast1.firebasedatabase.app")
+            .getReference("users").child(uid).child("piles")
+
+        userPilesRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val firebaseList = mutableListOf<ChargingPile>()
 
@@ -55,47 +59,69 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     val pile = child.getValue(ChargingPile::class.java)
                     if (pile != null) {
                         firebaseList.add(pile)
-                        dbHelper.insertPile(pile.id, pile.name, pile.isOnline) // sync to SQLite
+
+                        // Insert into local DB only if it does not exist for this user
+                        if (!dbHelper.pileExists(uid, pile.id)) {
+                            dbHelper.insertPile(uid, pile.id, pile.name, pile.isOnline)
+                        }
                     }
                 }
 
+                // Update in-memory list and LiveData
                 fullList = firebaseList
                 _allPiles.value = fullList
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Log error or show feedback (optional)
+                // Optional: Log error or notify user
             }
         })
     }
 
     /**
-     * Show all charging piles (no filters applied).
+     * Helper to get currently logged in user's UID.
+     */
+    private fun getCurrentUserId(): String? {
+        return com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+    }
+
+    /**
+     * Show all piles without filtering.
      */
     fun filterAll() {
         _allPiles.value = fullList
     }
 
     /**
-     * Filter and show only "Online" charging piles.
+     * Show only online piles.
      */
     fun filterOnline() {
         _allPiles.value = fullList.filter { it.isOnline }
     }
 
     /**
-     * Filter and show only "Offline" charging piles.
+     * Show only offline piles.
      */
     fun filterOffline() {
         _allPiles.value = fullList.filter { !it.isOnline }
     }
 
     /**
-     * Adds a new charging pile to in-memory list and refreshes UI.
-     * This is called after adding to Firebase/SQLite.
+     * Adds a new pile to in-memory list and updates UI.
+     * Call this after successful insertion to Firebase and SQLite.
+     */
+    /**
+     * Adds a new pile to Firebase only.
+     * UI will automatically update via Firebase listener (onDataChange).
      */
     fun addChargingPile(pile: ChargingPile) {
-        fullList = fullList + pile
-        _allPiles.value = fullList
+        val uid = getCurrentUserId() ?: return
+
+        val userPilesRef = FirebaseDatabase
+            .getInstance("https://evse-170a5-default-rtdb.asia-southeast1.firebasedatabase.app")
+            .getReference("users").child(uid).child("piles")
+
+        userPilesRef.child(pile.id).setValue(pile)
     }
+
 }

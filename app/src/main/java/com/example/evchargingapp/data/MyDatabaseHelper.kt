@@ -5,10 +5,15 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
+/**
+ * SQLite helper class to manage local database for users and charging piles.
+ * Supports user-scoped piles by storing user_id alongside pile id.
+ */
 class MyDatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, "MyDatabase.db", null, 1) {
+    SQLiteOpenHelper(context, "MyDatabase.db", null, 2) {  // DB version 2 for schema update
 
     override fun onCreate(db: SQLiteDatabase) {
+        // Create 'users' table
         val createUserTable = """
             CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,25 +23,32 @@ class MyDatabaseHelper(context: Context) :
             )
         """.trimIndent()
 
+        // Create 'piles' table with composite primary key (id, user_id)
         val createPilesTable = """
-        CREATE TABLE IF NOT EXISTS piles (
-        id TEXT PRIMARY KEY,
-        name TEXT,
-        isOnline INTEGER
-        )
+            CREATE TABLE IF NOT EXISTS piles (
+                id TEXT,
+                user_id TEXT,
+                name TEXT,
+                isOnline INTEGER,
+                PRIMARY KEY(id, user_id)
+            )
         """.trimIndent()
-        db.execSQL(createPilesTable)
 
         db.execSQL(createUserTable)
-
+        db.execSQL(createPilesTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        // Drop old tables and recreate on version upgrade (destructive migration)
         db.execSQL("DROP TABLE IF EXISTS users")
         db.execSQL("DROP TABLE IF EXISTS piles")
         onCreate(db)
     }
 
+    /**
+     * Insert a new user into the users table.
+     * Returns true if insert was successful, false otherwise.
+     */
     fun insertUser(username: String, email: String, otp: String): Boolean {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -48,22 +60,31 @@ class MyDatabaseHelper(context: Context) :
         return result != -1L
     }
 
-    fun insertPile(id: String, name: String, isOnline: Boolean): Boolean {
+    /**
+     * Insert or replace a charging pile for a specific user.
+     * Uses composite primary key (id, user_id) to avoid duplicates across users.
+     */
+    fun insertPile(userId: String, id: String, name: String, isOnline: Boolean): Boolean {
         val db = writableDatabase
         val values = ContentValues().apply {
+            put("user_id", userId)
             put("id", id)
             put("name", name)
             put("isOnline", if (isOnline) 1 else 0)
         }
-        val result = db.replace("piles", null, values) // ✅ replaces if duplicate exists
+        // REPLACE will insert or update existing pile for the same id and user_id
+        val result = db.replace("piles", null, values)
         return result != -1L
     }
 
-
-    fun getAllPiles(): List<ChargingPile> {
+    /**
+     * Get all charging piles for a given user from the local database.
+     */
+    fun getAllPiles(userId: String): List<ChargingPile> {
         val pileList = mutableListOf<ChargingPile>()
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM piles", null)
+
+        val cursor = db.rawQuery("SELECT * FROM piles WHERE user_id = ?", arrayOf(userId))
 
         if (cursor.moveToFirst()) {
             do {
@@ -74,34 +95,22 @@ class MyDatabaseHelper(context: Context) :
                 pileList.add(ChargingPile(id, name, isOnline))
             } while (cursor.moveToNext())
         }
-
         cursor.close()
+
         return pileList
     }
 
-    fun pileExists(id: String): Boolean {
+    /**
+     * Check if a pile with a given id exists for a specific user.
+     */
+    fun pileExists(userId: String, id: String): Boolean {
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT id FROM piles WHERE id = ?", arrayOf(id))
+        val cursor = db.rawQuery(
+            "SELECT id FROM piles WHERE id = ? AND user_id = ?",
+            arrayOf(id, userId)
+        )
         val exists = cursor.moveToFirst()
         cursor.close()
         return exists
-    }
-
-
-
-
-    fun getAllUsers(): List<String> {
-        val userList = mutableListOf<String>()
-        val db = readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM users", null)
-        if (cursor.moveToFirst()) {
-            do {
-                val name = cursor.getString(cursor.getColumnIndexOrThrow("username"))
-                val email = cursor.getString(cursor.getColumnIndexOrThrow("email"))
-                userList.add("$name - $email")
-            } while (cursor.moveToNext())
-        }
-        cursor.close()
-        return userList
     }
 }

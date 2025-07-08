@@ -40,7 +40,16 @@ class ChargingActivity : AppCompatActivity() {
         setupUI()
         observeViewModel()
         viewModel.loadChargingInfo() // Fetch charging info on load
+        viewModel.startPollingChargingInfo() // ✅ Start live updates
     }
+    /**
+     * Then override onDestroy() to stop polling:
+     * */
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.stopPollingChargingInfo() // ❌ Stop updates when screen closes
+    }
+
 
     /**
      * Sets up UI interactions and button click behavior.
