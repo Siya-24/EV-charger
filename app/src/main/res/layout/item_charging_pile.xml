@@ -1,50 +1,130 @@
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardElevation="4dp"
-    card_view:cardCornerRadius="8dp"
-    android:layout_margin="8dp"
+    android:layout_margin="12dp"
+    app:cardElevation="8dp"
+    app:cardCornerRadius="18dp"
+    app:cardBackgroundColor="@color/white"
     android:clickable="true"
-    android:focusable="true">   <!-- ✅ make whole card clickable -->
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="12dp"
-        android:background="#F7F7F7">
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:background="@android:color/transparent">
 
-        <!-- Charging Pile ID -->
-        <TextView
-            android:id="@+id/pileIdTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ID: CP001"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="#000000" />
+        <ImageView
+            android:id="@+id/imageViewPile"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_launcher_foreground"
+            android:contentDescription="Device image"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="8dp" />
 
-        <!-- Charging Pile Name -->
         <TextView
             android:id="@+id/pileNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Name: Charger A"
-            android:textSize="14sp"
-            android:textColor="#333333"
-            android:layout_marginTop="4dp" />
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:text="Car 1"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-        <!-- Charging Pile Status -->
-        <TextView
-            android:id="@+id/pileStatusTextView"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Status: Online"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:layout_marginTop="4dp" />
-
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <TextView
+                android:id="@+id/pileIdTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="ID: 1"
+                android:textSize="14sp"
+                android:textColor="@android:color/black" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <View
+                    android:id="@+id/statusDot"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/status_dot_online"
+                    android:backgroundTint="#00E676" />
+                <TextView
+                    android:id="@+id/pileStatusTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Online"
+                    android:textSize="14sp"
+                    android:textColor="#00E676" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
+
+
+
+    <!--<androidx.cardview.widget.CardView-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:card_view="http://schemas.android.com/apk/res-auto"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    card_view:cardElevation="4dp"-->
+<!--    card_view:cardCornerRadius="8dp"-->
+<!--    android:layout_margin="8dp"-->
+<!--    android:clickable="true"-->
+<!--    android:focusable="true">   &lt;!&ndash; ✅ make whole card clickable &ndash;&gt;-->
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="vertical"-->
+<!--        android:padding="12dp"-->
+<!--        android:background="#F7F7F7">-->
+
+<!--        &lt;!&ndash; Charging Pile ID &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:id="@+id/pileIdTextView"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="ID: CP001"-->
+<!--            android:textStyle="bold"-->
+<!--            android:textSize="16sp"-->
+<!--            android:textColor="#000000" />-->
+
+<!--        &lt;!&ndash; Charging Pile Name &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:id="@+id/pileNameTextView"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Name: Charger A"-->
+<!--            android:textSize="14sp"-->
+<!--            android:textColor="#333333"-->
+<!--            android:layout_marginTop="4dp" />-->
+
+<!--        &lt;!&ndash; Charging Pile Status &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:id="@+id/pileStatusTextView"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Status: Online"-->
+<!--            android:textSize="14sp"-->
+<!--            android:textColor="#666666"-->
+<!--            android:layout_marginTop="4dp" />-->
+
+<!--    </LinearLayout>-->
+<!--</androidx.cardview.widget.CardView>-->

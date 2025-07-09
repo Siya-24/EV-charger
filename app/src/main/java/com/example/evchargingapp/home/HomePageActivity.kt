@@ -144,9 +144,8 @@ class HomePageActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this)
             .setTitle("Add Charging Pile")
             .setView(dialogView)
-            .setPositiveButton("Add", null)  // We override click later to prevent auto-dismiss
-            .setNegativeButton("Cancel", null)
             .create()
+
 
         dialog.setOnShowListener {
             val addButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
@@ -200,6 +199,56 @@ class HomePageActivity : AppCompatActivity() {
         }
 
         dialog.show()
+
+        dialog.show()
+
+        val addButton = dialogView.findViewById<Button>(R.id.buttonAdd)
+        val cancelButton = dialogView.findViewById<Button>(R.id.buttonCancel)
+
+        addButton.setOnClickListener {
+            val id = idInput.text.toString().trim()
+            val name = nameInput.text.toString().trim()
+            val isOnline = statusSpinner.selectedItem.toString() == "Online"
+
+            if (id.isEmpty() || name.isEmpty()) {
+                Toast.makeText(this, "Please enter all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val uid = FirebaseAuth.getInstance().currentUser?.uid
+            if (uid == null) {
+                Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (dbHelper.pileExists(uid, id)) {
+                Toast.makeText(this, "Pile ID already exists!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val inserted = dbHelper.insertPile(uid, id, name, isOnline)
+            if (!inserted) {
+                Toast.makeText(this, "SQLite insertion failed", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val newPile = ChargingPile(id, name, isOnline)
+            val repo = AuthRepository(this)
+            repo.addChargingPile(newPile) { success, message ->
+                if (success) {
+                    viewModel.addChargingPile(newPile)
+                    Toast.makeText(this, "Charging pile added!", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                } else {
+                    Toast.makeText(this, "Failed: $message", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
     }
 
     // Inflate menu with logout and add pile options

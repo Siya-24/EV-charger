@@ -73,6 +73,7 @@ class ChargingViewModel(
 
                 if (response.isSuccessful) {
                     callback(true, null)
+//                  
                 } else {
                     callback(false, "Response code: ${response.code()}, error: ${response.errorBody()?.string()}")
                 }
@@ -95,6 +96,8 @@ class ChargingViewModel(
                 Log.d("ChargingViewModel", "Stop Charging Response: $responseStr")
 
                 if (response.isSuccessful) {
+                    // ✅ Stop polling here
+                    stopPollingChargingInfo()
                     callback(true, null)
                 } else {
                     callback(false, "Response code: ${response.code()}, error: ${response.errorBody()?.string()}")

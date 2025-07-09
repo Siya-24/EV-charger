@@ -1,68 +1,197 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="24dp"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white">
+    android:orientation="vertical"
+    android:background="@drawable/black_background_green_border"
+    android:padding="24dp"
+    android:elevation="12dp"
+    tools:ignore="ExtraText">
 
-    <!-- Charging Pile ID -->
+    <!-- Title -->
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Charging Pile ID"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        android:layout_marginBottom="6dp" />
+        android:text="@string/add_charging_pile"
+        android:textStyle="bold"
+        android:textSize="24sp"
+        android:textColor="@color/white"
+        android:layout_marginBottom="16dp" />
 
+    <!-- Charging Pile ID Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/charging_pile_id"
+        android:textSize="16sp"
+        android:textColor="@color/white" />
+
+    <!-- Charging Pile ID Input Field -->
+    <!-- Required: Used in code with ID etPileId -->
     <EditText
         android:id="@+id/etPileId"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="e.g. CP-123"
-        android:inputType="text"
-        android:textColor="@android:color/black"
+        android:layout_height="48dp"
+        android:hint="@string/charging_pile_id_hint"
+        android:background="@drawable/black_button_green_border"
+        android:padding="10dp"
+        android:textColor="@color/white"
         android:textColorHint="#888888"
-        android:background="@android:drawable/edit_text"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="12dp" />
 
-    <!-- Charging Pile Name -->
+    <!-- Charging Pile Name Label -->
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Charging Pile Name"
-        android:textColor="@android:color/black"
+        android:text="@string/charging_pile_name"
         android:textSize="16sp"
-        android:layout_marginBottom="6dp" />
+        android:textColor="@color/white" />
 
+    <!-- Charging Pile Name Input Field -->
+    <!-- Required: Used in code with ID etPileName -->
     <EditText
         android:id="@+id/etPileName"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="e.g. Green Station 1"
-        android:inputType="textCapWords"
-        android:textColor="@android:color/black"
+        android:layout_height="48dp"
+        android:hint="@string/charging_pile_name_hint"
+        android:background="@drawable/black_button_green_border"
+        android:padding="10dp"
+        android:textColor="@color/white"
         android:textColorHint="#888888"
-        android:background="@android:drawable/edit_text"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="12dp" />
 
-    <!-- Status -->
+    <!-- Status Label -->
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Status"
-        android:textColor="@android:color/black"
         android:textSize="16sp"
+        android:textColor="@color/white"
         android:layout_marginBottom="6dp" />
 
+    <!-- Status Dropdown Spinner -->
+    <!-- Required: Used in code with ID spinnerStatus -->
+    <!-- Status Dropdown Spinner with custom style -->
     <Spinner
         android:id="@+id/spinnerStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="16dp"
         android:spinnerMode="dropdown"
-        android:background="@android:drawable/btn_dropdown"
-        android:dropDownVerticalOffset="8dp"
-        android:padding="8dp" />
+        android:background="@drawable/black_button_green_border"
+        android:padding="8dp"
+        android:theme="@style/SpinnerThemeDark" /> <!-- 👈 Apply the theme here -->
 
+
+
+    <!-- Button Row: Cancel and Add -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/black"
+        android:gravity="end">
+
+        <!-- Cancel Button -->
+        <!-- Optional: Can be wired to dismiss dialog -->
+        <Button
+            android:id="@+id/buttonCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:textColor="@color/white"
+            android:background="@drawable/black_button_green_border"
+            android:textStyle="bold"
+            android:layout_marginEnd="16dp" />
+
+        <!-- Add Button -->
+        <!-- Optional: Can be used to trigger 'add' logic -->
+        <Button
+            android:id="@+id/buttonAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add"
+            android:textColor="@color/white"
+            android:background="@drawable/black_button_green_border"
+            android:textStyle="bold" />
+    </LinearLayout>
 </LinearLayout>
+
+
+
+
+
+
+
+
+
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:orientation="vertical"-->
+<!--    android:padding="24dp"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:background="@android:color/white">-->
+
+<!--    &lt;!&ndash; Charging Pile ID &ndash;&gt;-->
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Charging Pile ID"-->
+<!--        android:textColor="@android:color/black"-->
+<!--        android:textSize="16sp"-->
+<!--        android:layout_marginBottom="6dp" />-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/etPileId"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:hint="e.g. CP-123"-->
+<!--        android:inputType="text"-->
+<!--        android:textColor="@android:color/black"-->
+<!--        android:textColorHint="#888888"-->
+<!--        android:background="@android:drawable/edit_text"-->
+<!--        android:layout_marginBottom="16dp" />-->
+
+<!--    &lt;!&ndash; Charging Pile Name &ndash;&gt;-->
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Charging Pile Name"-->
+<!--        android:textColor="@android:color/black"-->
+<!--        android:textSize="16sp"-->
+<!--        android:layout_marginBottom="6dp" />-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/etPileName"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:hint="e.g. Green Station 1"-->
+<!--        android:inputType="textCapWords"-->
+<!--        android:textColor="@android:color/black"-->
+<!--        android:textColorHint="#888888"-->
+<!--        android:background="@android:drawable/edit_text"-->
+<!--        android:layout_marginBottom="16dp" />-->
+
+<!--    &lt;!&ndash; Status &ndash;&gt;-->
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Status"-->
+<!--        android:textColor="@android:color/black"-->
+<!--        android:textSize="16sp"-->
+<!--        android:layout_marginBottom="6dp" />-->
+
+<!--    <Spinner-->
+<!--        android:id="@+id/spinnerStatus"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="12dp"-->
+<!--        android:spinnerMode="dropdown"-->
+<!--        android:background="@android:drawable/btn_dropdown"-->
+<!--        android:dropDownVerticalOffset="8dp"-->
+<!--        android:padding="8dp" />-->
+
+<!--</LinearLayout>-->
