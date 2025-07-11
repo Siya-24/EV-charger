@@ -31,6 +31,7 @@
         <activity android:name=".auth.RegisterActivity" />
         <activity android:name=".home.HomePageActivity" />
         <activity android:name=".charging.ChargingActivity" />
+        <activity android:name=".user.UserActivity"/>
 
     </application>
 </manifest>

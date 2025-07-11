@@ -22,6 +22,7 @@ playServicesLocation = "21.0.1"
 playServicesLocationVersion = "21.3.0"
 playServicesMaps = "19.2.0"
 retrofit = "2.9.0"
+mediationTestSuite = "3.0.0"
 
 
 [libraries]
@@ -53,6 +54,7 @@ play-services-location = { module = "com.google.android.gms:play-services-locati
 play-services-location-v2130 = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocationVersion" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+mediation-test-suite = { group = "com.google.android.ads", name = "mediation-test-suite", version.ref = "mediationTestSuite" }
 
 
 [plugins]

@@ -45,6 +45,8 @@
         <string name="status">Status</string>
         <string name="cancel">CANCEL</string>
         <string name="add">ADD</string>
+        <string name="enter_user_name">Enter Username</string>
+        <string name="enter_User_name_hint">Enter username here</string>
 
 
 </resources>

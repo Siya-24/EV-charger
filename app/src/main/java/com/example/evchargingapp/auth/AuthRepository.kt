@@ -91,6 +91,29 @@ class AuthRepository(private val context: Context) {
             }
     }
 
+    /**
+     * Fetches the username for a given user ID (uid) from Firebase Realtime Database.
+     *
+     * @param uid The Firebase user ID.
+     * @param callback Lambda to receive username string or null if failed.
+     */
+    fun fetchUsername(uid: String, callback: (String?) -> Unit) {
+        val database = FirebaseDatabase.getInstance("https://evse-170a5-default-rtdb.asia-southeast1.firebasedatabase.app")
+        val userRef = database.getReference("users").child(uid).child("username")
+
+        // Attempt to get username once
+        userRef.get().addOnSuccessListener { snapshot ->
+            Log.d("DEBUG_USERNAME", "Raw snapshot: ${snapshot.value}")
+            val username = snapshot.getValue(String::class.java)
+            callback(username)
+        }.addOnFailureListener {
+            // Return null if failed to fetch username
+            callback(null)
+        }
+    }
+
+
+
     // ✅ ADD THIS METHOD TO FIX unresolved reference
     /**
      * Adds a new charging pile to Firebase under the current user's node
@@ -126,6 +149,8 @@ class AuthRepository(private val context: Context) {
                 callback(false, e.message)
             }
     }
+
+
 
 
 

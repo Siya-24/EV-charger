@@ -15,9 +15,8 @@
     </style>
 
     <style name="SpinnerThemeDark" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="android:popupBackground">@color/black</item>
+        <item name="android:textColorPrimary">@color/white</item>
     </style>
 
     <style name="SpinnerDropdown" parent="Widget.AppCompat.Spinner.DropDown">
@@ -25,6 +24,19 @@
         <!-- or use your theme color, e.g., ?attr/colorBackground or custom color -->
     </style>
 
+
+    <style name="CustomDialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <!-- Make the background transparent -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item>
+
+        <!-- Optional: Remove window elevation/shadow if needed -->
+        <item name="android:windowElevation">0dp</item>
+
+        <!-- Optional: Disable default dialog padding -->
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+    </style>
 
 
 

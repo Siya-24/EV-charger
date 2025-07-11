@@ -19,6 +19,7 @@ import com.example.evchargingapp.auth.LoginActivity
 import com.example.evchargingapp.charging.ChargingActivity
 import com.example.evchargingapp.data.ChargingPile
 import com.example.evchargingapp.data.MyDatabaseHelper
+import com.example.evchargingapp.user.UserActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 
@@ -45,9 +46,6 @@ class HomePageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_page)
 
-        // Clear shared preferences related to user (optional, can be removed if not needed)
-        val prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-        prefs.edit().clear().apply()
 
         // Initialize database helper
         dbHelper = MyDatabaseHelper(this)
@@ -113,7 +111,10 @@ class HomePageActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_home -> true  // Stay on home
                 R.id.nav_user -> {
-                    // TODO: Navigate to user profile or settings
+                    // Switch to User tab (start UserActivity)
+                    val intent = Intent(this, UserActivity::class.java)
+                    startActivity(intent)
+                    finish() // Optional: close HomePageActivity if you want only one active
                     true
                 }
                 else -> false
@@ -141,7 +142,7 @@ class HomePageActivity : AppCompatActivity() {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         statusSpinner.adapter = spinnerAdapter
 
-        val dialog = AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this, R.style.CustomDialogTheme)
             .setTitle("Add Charging Pile")
             .setView(dialogView)
             .create()
@@ -260,14 +261,6 @@ class HomePageActivity : AppCompatActivity() {
     // Handle toolbar menu item clicks for logout and add pile
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_logout -> {
-                FirebaseAuth.getInstance().signOut()
-                val prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-                prefs.edit().clear().apply()
-                startActivity(Intent(this, LoginActivity::class.java))
-                finish()
-                true
-            }
             R.id.action_add_charger -> {
                 showAddChargingPileDialog()
                 true
