@@ -1,37 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#2C2C2C">
+    android:layout_height="match_parent">
 
-    <!-- Top toolbar -->
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
+        style="@style/Widget.MaterialComponents.Toolbar.Primary"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#1D1D1D"
-        android:title="Charger management"
-        android:titleTextColor="#FFFFFF" />
-
-    <!-- RecyclerView list -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewChargerManagement"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
-        android:padding="8dp" />
-
-    <!-- Add (+) button -->
-    <ImageButton
-        android:id="@+id/btnAddPile"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="16dp"
-        android:layout_alignParentBottom="true"
-        android:background="@android:color/transparent"
-        android:src="@android:drawable/ic_input_add"
-        android:contentDescription="Add Pile"
-        android:tint="#FFC107" />
+        app:title="Charger Management" />
 
-</RelativeLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

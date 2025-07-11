@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.evchargingapp.R
 import com.example.evchargingapp.auth.LoginActivity
+import com.example.evchargingapp.chargerManagement.ChargerManagementActivity
 import com.example.evchargingapp.home.HomePageActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -34,8 +35,10 @@ class UserActivity : AppCompatActivity() {
         }
 
         // Navigation buttons
+
         findViewById<Button>(R.id.btnChargerManagement).setOnClickListener {
-            // TODO: Navigate to ChargerManagementActivity
+            val intent = Intent(this, ChargerManagementActivity::class.java)
+            startActivity(intent)
         }
 
         findViewById<Button>(R.id.btnNetworking).setOnClickListener {

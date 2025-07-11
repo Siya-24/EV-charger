@@ -32,6 +32,7 @@
         <activity android:name=".home.HomePageActivity" />
         <activity android:name=".charging.ChargingActivity" />
         <activity android:name=".user.UserActivity"/>
+        <activity android:name=".chargerManagement.ChargerManagementActivity"/>
 
     </application>
 </manifest>
