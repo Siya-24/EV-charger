@@ -1,5 +1,6 @@
 package com.example.evchargingapp.chargerManagement
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,7 @@ class ChargerManagementViewModel : ViewModel() {
 
     init {
         fetchChargers()
+        Log.d("FirebaseDebug", "User ID: $userId")  // ✅ Add here
     }
 
     private fun fetchChargers() {
@@ -27,7 +29,11 @@ class ChargerManagementViewModel : ViewModel() {
                 val chargers = mutableListOf<ChargingPile>()
                 for (child in snapshot.children) {
                     val charger = child.getValue(ChargingPile::class.java)
-                    charger?.let { chargers.add(it) }
+                    charger?.let {
+                        Log.d("FirebaseDebug", "Fetched charger: ${it.id} - ${it.name}")
+
+
+                        chargers.add(it) }
                 }
                 _chargerList.value = chargers
             }
@@ -48,6 +54,14 @@ class ChargerManagementViewModel : ViewModel() {
 
     // ✅ NEW FUNCTION: Called from the AddChargingPileDialog
     fun addChargingPile(pile: ChargingPile) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val databaseRef = FirebaseDatabase
+            .getInstance("https://evse-170a5-default-rtdb.asia-southeast1.firebasedatabase.app")
+            .getReference("users")
+            .child(userId)
+            .child("piles") // ✅ This was missing
+
         databaseRef.child(pile.id).setValue(pile)
     }
+
 }

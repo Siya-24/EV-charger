@@ -15,6 +15,8 @@ import com.example.evchargingapp.data.ChargingPile
  * Uses ListAdapter with DiffUtil for efficient updates.
  *
  * @param onItemClick A lambda that will be called when a pile item is clicked.
+ *
+ * this is the charging item for the home page which connects to the item_charging_pile
  */
 class ChargingPileAdapter(
     private val onItemClick: (ChargingPile) -> Unit
