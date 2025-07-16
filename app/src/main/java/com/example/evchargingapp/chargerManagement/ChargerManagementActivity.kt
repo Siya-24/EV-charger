@@ -69,6 +69,11 @@ class ChargerManagementActivity : AppCompatActivity() {
         }
     }
 
+
+    // These below functions are currently in the Activity (e.g., ChargerManagementActivity)
+    // But ideally, they SHOULD be in the ViewModel if you want clean MVVM separation.
+    // However, your logic is still valid if the rename/delete are *only used here*.
+
     // ✅ Show rename input dialog and update Firebase
     private fun showRenameDialog(pile: ChargingPile) {
         val input = EditText(this)

@@ -3,8 +3,12 @@ package com.example.evchargingapp.auth
 import android.content.Context
 import android.util.Log
 import com.example.evchargingapp.data.ChargingPile
+import com.example.evchargingapp.data.LoginRequest
+import com.example.evchargingapp.data.LoginResponse
 import com.example.evchargingapp.data.MyDatabaseHelper
-import com.example.evchargingapp.data.User
+import com.example.evchargingapp.data.SignupRequest
+import com.example.evchargingapp.data.SignupResponse
+import com.example.evchargingapp.data.User  // ✅ should point here
 import com.example.evchargingapp.network.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -16,80 +20,53 @@ class AuthRepository(private val context: Context) {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    fun sendOtp(email: String, callback: (Boolean, String?) -> Unit) {
-        OtpRetrofitClient.instance.sendOtp(SendOtpRequest(email))
-            .enqueue(object : Callback<ApiResponse> {
-                override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                    callback(response.isSuccessful, null)
-                }
+//    fun registerUser(
+//        username: String,
+//        email: String,
+//        password: String,
+//        onComplete: (Boolean, String?) -> Unit
+//    ) {
+//        auth.createUserWithEmailAndPassword(email, password)
+//            .addOnCompleteListener { task ->
+//                if (task.isSuccessful) {
+//                    val uid = auth.currentUser?.uid ?: return@addOnCompleteListener
+//                    val user = User(uid, username, email)
+//                    val database = FirebaseDatabase.getInstance("https://evse-170a5-default-rtdb.asia-southeast1.firebasedatabase.app")
+//
+//                    val usersRef = database.getReference("users")
+//
+//                    usersRef.child(uid).setValue(user)
+//                        .addOnCompleteListener { dbTask ->
+//                            if (dbTask.isSuccessful) {
+//                                val dbHelper = MyDatabaseHelper(context)
+//                                val inserted = dbHelper.insertUser(username, email)
+//                                if (inserted) {
+//                                    onComplete(true, null)
+//                                } else {
+//                                    onComplete(false, "SQLite insertion failed")
+//                                }
+//                            } else {
+//                                onComplete(false, dbTask.exception?.message)
+//                                Log.e("FirebaseError", "DB Error", dbTask.exception)
+//                            }
+//                        }
+//                } else {
+//                    onComplete(false, task.exception?.message)
+//                    Log.e("AuthError", "Register failed", task.exception)
+//                }
+//            }
+//    }
 
-                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-                    callback(false, t.message)
-                }
-            })
-    }
-
-    fun verifyOtp(email: String, otp: String, callback: (Boolean) -> Unit) {
-        OtpRetrofitClient.instance.verifyOtp(VerifyOtpRequest(email, otp))
-            .enqueue(object : Callback<ApiResponse> {
-                override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                    callback(response.isSuccessful && response.body()?.success == true)
-                }
-
-                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-                    callback(false)
-                }
-            })
-    }
-
-    fun registerUser(
-        username: String,
-        email: String,
-        password: String,
-        otp: String,
-        onComplete: (Boolean, String?) -> Unit
-    ) {
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val uid = auth.currentUser?.uid ?: return@addOnCompleteListener
-                    val user = User(uid, username, email, otp)
-                    val database = FirebaseDatabase.getInstance("https://evse-170a5-default-rtdb.asia-southeast1.firebasedatabase.app")
-
-                    val usersRef = database.getReference("users")
-
-                    usersRef.child(uid).setValue(user)
-                        .addOnCompleteListener { dbTask ->
-                            if (dbTask.isSuccessful) {
-                                val dbHelper = MyDatabaseHelper(context)
-                                val inserted = dbHelper.insertUser(username, email, otp)
-                                if (inserted) {
-                                    onComplete(true, null)
-                                } else {
-                                    onComplete(false, "SQLite insertion failed")
-                                }
-                            } else {
-                                onComplete(false, dbTask.exception?.message)
-                                Log.e("FirebaseError", "DB Error", dbTask.exception)
-                            }
-                        }
-                } else {
-                    onComplete(false, task.exception?.message)
-                    Log.e("AuthError", "Register failed", task.exception)
-                }
-            }
-    }
-
-    fun loginUser(email: String, password: String, onComplete: (Boolean, String?) -> Unit) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    onComplete(true, null)
-                } else {
-                    onComplete(false, task.exception?.message)
-                }
-            }
-    }
+//    fun loginUser(email: String, password: String, onComplete: (Boolean, String?) -> Unit) {
+//        auth.signInWithEmailAndPassword(email, password)
+//            .addOnCompleteListener { task ->
+//                if (task.isSuccessful) {
+//                    onComplete(true, null)
+//                } else {
+//                    onComplete(false, task.exception?.message)
+//                }
+//            }
+//    }
 
     /**
      * Fetches the username for a given user ID (uid) from Firebase Realtime Database.
@@ -149,6 +126,63 @@ class AuthRepository(private val context: Context) {
                 callback(false, e.message)
             }
     }
+
+
+    fun registerUserViaApi(username: String, email: String, password: String, callback: (Boolean, String?) -> Unit) {
+        val request = SignupRequest(username, email, password)
+        val call = AuthRetrofitClient.apiService.registerUser(request)
+
+        call.enqueue(object : retrofit2.Callback<SignupResponse> {
+            override fun onResponse(call: Call<SignupResponse>, response: Response<SignupResponse>) {
+                if (response.isSuccessful && response.body()?.success == true) {
+                    callback(true, null)
+                } else {
+                    callback(false, response.body()?.message ?: "Server error")
+                }
+            }
+
+            override fun onFailure(call: Call<SignupResponse>, t: Throwable) {
+                callback(false, t.message ?: "Network failure")
+            }
+        })
+    }
+
+    fun loginUserViaApi(
+        email: String,
+        password: String,
+        callback: (Boolean, String?, String?) -> Unit // (success, errorMsg, username)
+    ) {
+        val request = LoginRequest(email, password)
+        val call = AuthRetrofitClient.apiService.loginUser(request)
+
+        call.enqueue(object : Callback<LoginResponse> {
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                if (response.isSuccessful && response.body()?.success == true) {
+                    val token = response.body()?.token
+                    val username = response.body()?.username // ✅ Extract username
+
+                    val sharedPref = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                    sharedPref.edit().apply {
+                        putString("token", token)
+                        putString("username", username) // ✅ Save username
+                        apply()
+                    }
+
+                    callback(true, null, username) // ✅ Pass username to ViewModel
+                } else {
+                    callback(false, response.body()?.message ?: "Server error", null)
+                }
+            }
+
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                callback(false, t.message ?: "Network error", null)
+            }
+        })
+    }
+
+
+
+
 
 
 

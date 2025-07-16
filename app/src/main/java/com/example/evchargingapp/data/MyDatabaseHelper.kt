@@ -18,8 +18,7 @@ class MyDatabaseHelper(context: Context) :
             CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT,
-                email TEXT,
-                otp TEXT
+                email TEXT
             )
         """.trimIndent()
 
@@ -49,12 +48,11 @@ class MyDatabaseHelper(context: Context) :
      * Insert a new user into the users table.
      * Returns true if insert was successful, false otherwise.
      */
-    fun insertUser(username: String, email: String, otp: String): Boolean {
+    fun insertUser(username: String, email: String): Boolean {
         val db = writableDatabase
         val values = ContentValues().apply {
             put("username", username)
             put("email", email)
-            put("otp", otp)
         }
         val result = db.insert("users", null, values)
         return result != -1L

@@ -3,14 +3,14 @@ package com.example.evchargingapp.network
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object OtpRetrofitClient {
-    private const val BASE_URL = "https://otp-api.free.beeceptor.com"  //currently this is the mock api url
+object AuthRetrofitClient {
+    private const val BASE_URL = "https://23fdea73266e.ngrok-free.app/" // e.g., http://192.168.1.10:3000
 
-    val instance: OtpApiService by lazy {
+    val apiService: ApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(OtpApiService::class.java)
+            .create(ApiService::class.java)
     }
 }
