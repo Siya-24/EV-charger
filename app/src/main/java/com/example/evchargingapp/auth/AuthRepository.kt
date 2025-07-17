@@ -159,16 +159,29 @@ class AuthRepository(private val context: Context) {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful && response.body()?.success == true) {
                     val token = response.body()?.token
-                    val username = response.body()?.username // ✅ Extract username
+                    val username = response.body()?.username
 
+                    // Save token and username locally
                     val sharedPref = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                     sharedPref.edit().apply {
                         putString("token", token)
-                        putString("username", username) // ✅ Save username
+                        putString("username", username)
                         apply()
                     }
 
-                    callback(true, null, username) // ✅ Pass username to ViewModel
+                    // 🔑 FirebaseAuth sign-in required for Firebase Database access
+                    FirebaseAuth.getInstance()
+                        .signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { firebaseTask ->
+                            if (firebaseTask.isSuccessful) {
+                                Log.d("AuthRepo", "Firebase login success: ${FirebaseAuth.getInstance().currentUser?.uid}")
+                                callback(true, null, username)
+                            } else {
+                                Log.e("AuthRepo", "Firebase login failed", firebaseTask.exception)
+                                callback(false, "Firebase login failed: ${firebaseTask.exception?.message}", null)
+                            }
+                        }
+
                 } else {
                     callback(false, response.body()?.message ?: "Server error", null)
                 }
@@ -179,6 +192,7 @@ class AuthRepository(private val context: Context) {
             }
         })
     }
+
 
 
 

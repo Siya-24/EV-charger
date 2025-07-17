@@ -2,6 +2,7 @@ package com.example.evchargingapp.common.dialogs
 
 import android.app.AlertDialog
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.*
 import com.example.evchargingapp.R
@@ -56,9 +57,15 @@ class AddChargingPileDialog {
                 }
 
                 val newPile = ChargingPile(id = id, name = name, isOnline = isOnline)
-                onAddPile(newPile)  // Call ViewModel’s add function
+
+                // ✅ ADD THIS LINE
+                Log.d("AddDialog", "Creating pile: $newPile")
+
+                onAddPile(newPile)  // This should trigger the ViewModel insert
                 dialog.dismiss()
             }
+
+
 
             dialog.show()
         }

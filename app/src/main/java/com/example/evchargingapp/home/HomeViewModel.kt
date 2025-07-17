@@ -1,11 +1,13 @@
 package com.example.evchargingapp.home
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.evchargingapp.data.ChargingPile
 import com.example.evchargingapp.data.MyDatabaseHelper
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 /**
@@ -39,6 +41,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         fullList = dbHelper.getAllPiles(uid)
         _allPiles.value = fullList
     }
+
 
     /**
      * Syncs piles from Firebase Realtime Database under "users/{uid}/piles".
@@ -82,8 +85,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * Helper to get currently logged in user's UID.
      */
     private fun getCurrentUserId(): String? {
-        return com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+        val user = FirebaseAuth.getInstance().currentUser
+        Log.d("FirebaseAuth", "Current UID: ${user?.uid}")
+        return user?.uid
     }
+
 
     /**
      * Show all piles without filtering.
@@ -115,13 +121,28 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * UI will automatically update via Firebase listener (onDataChange).
      */
     fun addChargingPile(pile: ChargingPile) {
-        val uid = getCurrentUserId() ?: return
+        val uid = getCurrentUserId()
+        Log.d("AddPile", "UID = $uid")
+        if (uid == null) {
+            Log.e("AddPile", "User not logged in. Aborting insert.")
+            return
+        }
+
+        Log.d("AddPile", "Attempting to insert pile ${pile.id} to Firebase")
 
         val userPilesRef = FirebaseDatabase
             .getInstance("https://evse-170a5-default-rtdb.asia-southeast1.firebasedatabase.app")
             .getReference("users").child(uid).child("piles")
 
         userPilesRef.child(pile.id).setValue(pile)
+            .addOnSuccessListener {
+                Log.d("AddPile", "Successfully inserted pile: ${pile.name}")
+            }
+            .addOnFailureListener {
+                Log.e("AddPile", "Insert failed: ${it.message}")
+            }
     }
+
+
 
 }

@@ -3,15 +3,15 @@ package com.example.evchargingapp.charging
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.evchargingapp.charging.model.ChargingInfoResponse
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import android.util.Log
 
 /**
@@ -32,9 +32,25 @@ class ChargingViewModel(
      */
     fun loadChargingInfo() {
         repository.getChargingInfo(pileId).enqueue(object : Callback<ChargingInfoResponse> {
-            override fun onResponse(call: Call<ChargingInfoResponse>, response: Response<ChargingInfoResponse>) {
+            override fun onResponse(
+                call: Call<ChargingInfoResponse>,
+                response: Response<ChargingInfoResponse>
+            ) {
                 if (response.isSuccessful) {
-                    _chargingInfo.postValue(response.body())
+                    val info = response.body()
+                    if (info != null) {
+                        _chargingInfo.postValue(
+                            ChargingInfoResponse(
+                                id = info.id, // ✅ Required field
+                                temperature = info.temperature,
+                                voltage = info.voltage,
+                                current = info.current,
+                                energy = info.energy,
+                                time = info.time,
+                                isCharging = info.isCharging
+                            )
+                        )
+                    }
                 } else {
                     Log.e("ChargingViewModel", "loadChargingInfo failed: ${response.errorBody()?.string()}")
                 }
@@ -46,7 +62,9 @@ class ChargingViewModel(
         })
     }
 
-    /** 🔁 Start periodic polling every 5 seconds */
+    /**
+     * 🔁 Start periodic polling every 5 seconds.
+     */
     fun startPollingChargingInfo() {
         pollingJob?.cancel()
         pollingJob = viewModelScope.launch {
@@ -57,13 +75,15 @@ class ChargingViewModel(
         }
     }
 
-    /** ❌ Stop polling when not needed */
+    /**
+     * ❌ Stop polling when not needed.
+     */
     fun stopPollingChargingInfo() {
         pollingJob?.cancel()
     }
 
     /**
-     * Starts the charging session by hitting the dummy backend.
+     * Starts the charging session by hitting the backend.
      */
     fun startCharging(callback: (Boolean, String?) -> Unit) {
         repository.startCharging(pileId).enqueue(object : Callback<ResponseBody> {
@@ -73,7 +93,6 @@ class ChargingViewModel(
 
                 if (response.isSuccessful) {
                     callback(true, null)
-//                  
                 } else {
                     callback(false, "Response code: ${response.code()}, error: ${response.errorBody()?.string()}")
                 }
@@ -87,16 +106,15 @@ class ChargingViewModel(
     }
 
     /**
-     * Stops the charging session by hitting the dummy backend.
+     * Stops the charging session by hitting the backend.
      */
     fun stopCharging(callback: (Boolean, String?) -> Unit) {
-        repository.stopCharging(pileId).enqueue(object : Callback<ResponseBody> { // Changed Call<Void> to Call<ResponseBody> to support JSON from the server (e.g., { "success": true })
+        repository.stopCharging(pileId).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 val responseStr = response.body()?.string()
                 Log.d("ChargingViewModel", "Stop Charging Response: $responseStr")
 
                 if (response.isSuccessful) {
-                    // ✅ Stop polling here
                     stopPollingChargingInfo()
                     callback(true, null)
                 } else {

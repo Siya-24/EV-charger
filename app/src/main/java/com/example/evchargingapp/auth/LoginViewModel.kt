@@ -19,14 +19,14 @@ class LoginViewModel(private val repository: AuthRepository) : ViewModel() {
      * Attempts to login user using provided email and password via your API only.
      */
     fun login(email: String, password: String) {
-        repository.loginUserViaApi(email, password) { success, errorMsg ->
+        repository.loginUserViaApi(email, password) { success, errorMsg, fetchedUsername ->
             if (success) {
+                _username.postValue(fetchedUsername) // ✅ Set LiveData for username
                 _loginSuccess.postValue(true)
-                // OPTIONAL: If your API returns a username or token, you can store it here
             } else {
                 _loginSuccess.postValue(false)
                 _error.postValue(errorMsg ?: "Unknown error")
             }
         }
-    }
-}
+    }}
+

@@ -9,6 +9,6 @@ data class LoginRequest(
 data class LoginResponse(
     val success: Boolean,
     val message: String?,
-    val username: String,
+    val username: String?,
     val token: String?  // or other fields your backend returns
 )
